@@ -58,7 +58,7 @@ python3 rtos/run_stress.py
 | **Stage 3: Interrupts** | `app/test_interrupt.c`<br>`rtos_interrupt.hex` | CLINT `mtime` hardware progression, timer wake accuracy, Machine Software Interrupt (`MSIP`, cause `0x80000003`) vectoring and clearing, `vTaskNotifyGiveFromISR()` task unblocking, and 10 rapid competing interrupts under ticks without register or stack corruption. | **PASS** |
 | **Stage 4: Timing** | `app/test_timing.c`<br>`rtos_timing.hex` | Cycle-accurate latency decomposition using RISC-V `mcycle` CSR over 20 iterations. Formally documents distinction between empirical maximums and proven WCET bounds. | **PASS** |
 | **Stage 5: Stress & RTA** | `app/test_stress.c`<br>`rtos_stress.hex` | Three fixed-priority tasks: task 1 (10 ms period), task 2 (25 ms period), task 3 (continuous background load), with shared priority-inheritance mutex contention. 0 deadline misses in positive run. **Negative Control (`rtos_stress_neg.hex`):** Injected workload overload reliably triggers and reports 3 deadline misses. | **PASS** |
-| **Platform: MEIP** | `rtl/three_sipp_es_soc.sv` | Machine External Interrupt line (`irq_ext`) is tied to `1'b0` in SoC RTL (no PLIC instantiated). | **SKIPPED (UNSUPPORTED)** |
+| **Platform: MEIP** | `rtl/three_sipp_esr_soc.sv` | Machine External Interrupt line (`irq_ext`) is tied to `1'b0` in SoC RTL (no PLIC instantiated). | **SKIPPED (UNSUPPORTED)** |
 
 ---
 
@@ -110,7 +110,7 @@ rtos/
 │   ├── libc_stubs.c          # Freestanding libc stubs (memcpy, memset, memmove, strncpy, strlen)
 │   ├── stdlib.h / string.h   # Freestanding minimal headers for bare-metal compilers
 │   ├── start.S               # Reset crt0, data copy (IMEM->DRAM), bss zero, mtvec setup
-│   └── three_sipp_es.ld      # Linker script (IMEM @ 0x0, DRAM @ 0x80000000)
+│   └── three_sipp_esr.ld      # Linker script (IMEM @ 0x0, DRAM @ 0x80000000)
 ├── build/                    # Generated ELF, BIN, and HEX images
 ├── build_rtos.sh             # Multi-variant compilation driver
 ├── run_rtos.py               # Stage 1 demo runner & transcript assertions

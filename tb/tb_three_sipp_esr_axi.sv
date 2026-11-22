@@ -1,6 +1,6 @@
 // ============================================================================
-// tb_three_sipp_es_axi.sv — self-checking testbench for the 3-SIPP-ESR AXI4-Lite MASTER
-// bridge (three_sipp_es_axi_lite). Connects the master to an inline AXI4-Lite
+// tb_three_sipp_esrr_axi.sv — self-checking testbench for the 3-SIPP-ESR AXI4-Lite MASTER
+// bridge (three_sipp_esr_axi_lite). Connects the master to an inline AXI4-Lite
 // slave-memory BFM (a word array that honours WSTRB byte strobes) and drives a
 // sequence of word + sub-word loads/stores THROUGH the five AXI channels
 // (AW/W/B/AR/R), verifying end-to-end data integrity and OKAY responses, PLUS a
@@ -23,7 +23,7 @@
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_es_axi;
+module tb_three_sipp_esrr_axi;
   localparam int ADDR_W = 32, DATA_W = 32;
   // Any access whose word address hits this region returns SLVERR from the slave.
   localparam logic [ADDR_W-1:0] ERR_ADDR = 32'h0000_0F00;
@@ -47,7 +47,7 @@ module tb_three_sipp_es_axi;
   logic [ADDR_W-1:0] araddr;  logic [2:0] arprot; logic arvalid, arready;
   logic [DATA_W-1:0] rdata;   logic [1:0] rresp;  logic rvalid, rready;
 
-  three_sipp_es_axi_lite #(.ADDR_W(ADDR_W), .DATA_W(DATA_W)) u_axi (
+  three_sipp_esr_axi_lite #(.ADDR_W(ADDR_W), .DATA_W(DATA_W)) u_axi (
     .clk(clk), .rst(rst),
     .req_valid(req_valid), .req_ready(req_ready), .req_write(req_write),
     .req_addr(req_addr), .req_wdata(req_wdata), .req_wstrb(req_wstrb),

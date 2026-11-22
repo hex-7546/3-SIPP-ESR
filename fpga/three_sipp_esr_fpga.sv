@@ -1,20 +1,20 @@
 // ============================================================================
-// three_sipp_es_fpga.sv — Synthesizable FPGA SoC for 3-SIPP-ESR (RV32IMC, 3-stage).
+// three_sipp_esr_fpga.sv — Synthesizable FPGA SoC for 3-SIPP-ESR (RV32IMC, 3-stage).
 //
-// Same board-independent SoC pattern as three_sipp_es_fpga, minus the debug module
+// Same board-independent SoC pattern as three_sipp_esr_fpga, minus the debug module
 // (3-SIPP-ESR has no DM yet). Unified distributed-RAM (async read, $readmemh init)
-// + reused three_sipp_es_uart + LEDs + minimal CLINT + tohost.
+// + reused three_sipp_esr_uart + LEDs + minimal CLINT + tohost.
 //
 // Address map:
 //   0x0000_0000.. : RAM (MEM_WORDS words)   0x1000_0000 : UART
 //   0x0200_0000   : CLINT                    0x2000_0000 : tohost
 //   0x2000_1000   : LED register
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
 
-module three_sipp_es_fpga
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_fpga
+  import three_sipp_esr_pkg::*;
 #(
   parameter int CLK_HZ     = 50_000_000,
   parameter int UART_BAUD  = 115_200,
@@ -48,7 +48,7 @@ module three_sipp_es_fpga
   wire        irq_timer = (mtime >= mtimecmp);
   wire        irq_soft  = msip;
 
-  three_sipp_es_core u_core (
+  three_sipp_esr_core u_core (
     .clk(clk), .rst(rst),
     .imem_addr(imem_addr), .imem_rdata(imem_rdata),
     .dmem_addr(dmem_addr), .dmem_re(dmem_re), .dmem_we(dmem_we),
@@ -85,7 +85,7 @@ module three_sipp_es_fpga
   end
 
   wire [7:0] uart_rdata; wire uart_tx_irq, uart_rx_irq;
-  three_sipp_es_uart #(.CLK_HZ(CLK_HZ), .BAUD(UART_BAUD)) u_uart (
+  three_sipp_esr_uart #(.CLK_HZ(CLK_HZ), .BAUD(UART_BAUD)) u_uart (
     .clk(clk), .rst(rst), .addr(dmem_addr[3:0]), .wdata(dmem_wdata[7:0]),
     .we(dmem_we && uart_sel), .re(dmem_re && uart_sel), .rdata(uart_rdata),
     .serial_tx(serial_tx), .serial_rx(serial_rx),

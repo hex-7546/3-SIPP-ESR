@@ -59,7 +59,7 @@ Machine-readable JSON data is captured in `rtos/timing_results.json`.
 
 1. **Why Observed Max $\ne$ Proven WCET:**
    * Empirical testing only covers the specific execution paths, register contents, and instruction alignments exercised by the test inputs.
-   * Multi-cycle operations (e.g., non-restoring divider `three_sipp_es_muldiv.sv` requiring up to 34 cycles for division) can introduce data-dependent variations.
+   * Multi-cycle operations (e.g., non-restoring divider `three_sipp_esr_muldiv.sv` requiring up to 34 cycles for division) can introduce data-dependent variations.
    * Bus contention, flash/SRAM wait states (on FPGA), and asynchronous interrupts striking during multi-word memory accesses can lengthen pipeline stalls beyond the observed 681-cycle window.
 2. **Sources of Jitter in 3-SIPP-ESR:**
    * **Instruction Multi-cycle Execution:** If an interrupt arrives while the core is executing a multi-cycle `DIV`/`REMU` or waiting on a multi-beat bus transfer, `take_irq` cannot commit until the execute stage is non-frozen.

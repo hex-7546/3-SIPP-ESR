@@ -1,6 +1,6 @@
 # =============================================================================
-# three_sipp_es_arty_a7.tcl — Vivado batch flow to a BITSTREAM for the Arty A7-100T.
-#   vivado -mode batch -source three_sipp_es_arty_a7.tcl -tclargs <BUILD_DIR>
+# three_sipp_esr_arty_a7.tcl — Vivado batch flow to a BITSTREAM for the Arty A7-100T.
+#   vivado -mode batch -source three_sipp_esr_arty_a7.tcl -tclargs <BUILD_DIR>
 # Build firmware first: cd sw && ./build_fpga_hello.sh && cp firmware.mem <BUILD_DIR>/
 # =============================================================================
 set fpga_dir  [file normalize [file dirname [info script]]]
@@ -10,7 +10,7 @@ set part      xc7a100tcsg324-1
 file mkdir $build_dir
 cd $build_dir
 
-set fp [open $fpga_dir/three_sipp_es_arty_a7.f r]
+set fp [open $fpga_dir/three_sipp_esr_arty_a7.f r]
 while {[gets $fp line] >= 0} {
   set line [string trim $line]
   if {$line eq "" || [string match "#*" $line] || [string match "//*" $line]} { continue }
@@ -23,9 +23,9 @@ while {[gets $fp line] >= 0} {
 }
 close $fp
 
-read_xdc $fpga_dir/three_sipp_es_arty_a7.xdc
+read_xdc $fpga_dir/three_sipp_esr_arty_a7.xdc
 set_property part $part [current_project]
-set_property top three_sipp_es_arty_a7 [current_fileset]
+set_property top three_sipp_esr_arty_a7 [current_fileset]
 
 if {![file exists $build_dir/firmware.mem] && [file exists $fpga_dir/../../sw/firmware.mem]} {
   file copy -force $fpga_dir/../../sw/firmware.mem $build_dir/firmware.mem
@@ -33,7 +33,7 @@ if {![file exists $build_dir/firmware.mem] && [file exists $fpga_dir/../../sw/fi
 add_files -norecurse $build_dir/firmware.mem
 set_property file_type {Memory Initialization Files} [get_files firmware.mem]
 
-synth_design -top three_sipp_es_arty_a7 -part $part -directive PerformanceOptimized
+synth_design -top three_sipp_esr_arty_a7 -part $part -directive PerformanceOptimized
 opt_design -directive Explore
 place_design -directive Explore
 phys_opt_design -directive Explore
@@ -41,5 +41,5 @@ route_design -directive Explore
 report_utilization    -file $build_dir/util.rpt
 report_timing_summary -file $build_dir/timing.rpt
 write_checkpoint -force $build_dir/route.dcp
-write_bitstream -force $build_dir/three_sipp_es_arty_a7.bit
-puts "DONE: $build_dir/three_sipp_es_arty_a7.bit"
+write_bitstream -force $build_dir/three_sipp_esr_arty_a7.bit
+puts "DONE: $build_dir/three_sipp_esr_arty_a7.bit"

@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_debug.sv — RISC-V External Debug (Debug Spec 0.13.2) for 3-SIPP-ESR.
+// three_sipp_esr_debug.sv — RISC-V External Debug (Debug Spec 0.13.2) for 3-SIPP-ESR.
 //
 // Provides what PicoRV32 (only a partial/custom debug port) and a base SERV do
 // not ship by default: a *standard* Debug Transport Module (JTAG DTM) + Debug
@@ -23,7 +23,7 @@
 // ============================================================================
 
 
-module three_sipp_es_debug #(
+module three_sipp_esr_debug #(
   parameter logic [31:0] IDCODE = 32'h4B41_5641   // "KAVA", bit0=1 per JTAG
 )(
   input  wire        clk,
@@ -35,7 +35,7 @@ module three_sipp_es_debug #(
   input  wire        tdi,
   output reg         tdo,
 
-  // ---- hart control (to/from three_sipp_es_core) ---------------------------------
+  // ---- hart control (to/from three_sipp_esr_core) ---------------------------------
   output wire        dbg_haltreq,
   output reg         dbg_resumereq,
   output wire        ndmreset,

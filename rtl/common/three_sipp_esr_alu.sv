@@ -1,10 +1,10 @@
 // ============================================================================
-// three_sipp_es_alu.sv — Combinational RV32I ALU.
+// three_sipp_esr_alu.sv — Combinational RV32I ALU.
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_alu
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_alu
+  import three_sipp_esr_pkg::*;
 (
   input  alu_op_e          op,
   input  logic [XLEN-1:0]  a,

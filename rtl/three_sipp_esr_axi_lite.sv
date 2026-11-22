@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_axi_lite.sv — AXI4-Lite MASTER bridge for the 3-SIPP-ESR data port.
+// three_sipp_esr_axi_lite.sv — AXI4-Lite MASTER bridge for the 3-SIPP-ESR data port.
 //
 // E-class-grade cores ship a standard bus. This wrapper adapts 3-SIPP-ESR's simple
 // request/response memory interface (the same addr/wdata/byte-strobe shape as the
@@ -10,8 +10,8 @@
 // strobes. One outstanding transaction at a time (AXI4-Lite permits this) —
 // simple, correct, and directly synthesizable onto an AXI fabric.
 //
-// OPTIONAL: this is a standalone leaf cell. The existing non-AXI three_sipp_es_soc and
-// the `run.sh three_sipp_es` compliance path never instantiate it, so they are
+// OPTIONAL: this is a standalone leaf cell. The existing non-AXI three_sipp_esr_soc and
+// the `run.sh three_sipp_esr` compliance path never instantiate it, so they are
 // byte-for-byte unchanged. A design that wants an AXI bus wraps the core's dmem
 // port with this bridge: drive req_valid on (dmem_re | dmem_we), map dmem_be onto
 // req_wstrb, and hold the core until req_ready is seen and rsp_valid returns.
@@ -25,10 +25,10 @@
 //     and each channel's VALID drops the cycle after its handshake (per-channel
 //     done flags for the write path where AW and W complete independently).
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_axi_lite
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_axi_lite
+  import three_sipp_esr_pkg::*;
 #(
   parameter int unsigned ADDR_W = 32,
   parameter int unsigned DATA_W = 32

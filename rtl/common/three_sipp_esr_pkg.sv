@@ -1,13 +1,13 @@
 // ============================================================================
-// three_sipp_es_pkg.sv — Shared types, opcodes & CSR constants for 3-SIPP-ESR.
+// three_sipp_esr_pkg.sv — Shared types, opcodes & CSR constants for 3-SIPP-ESR.
 //
 // 3-SIPP-ESR is a compact, high-performance 3-stage in-order RV32IMAC core.
 // This package holds the datapath types used across the core and its leaf cells.
 // ============================================================================
-`ifndef THREE_SIPP_ES_PKG_SV
-`define THREE_SIPP_ES_PKG_SV
+`ifndef THREE_SIPP_ESR_PKG_SV
+`define THREE_SIPP_ESR_PKG_SV
 
-package three_sipp_es_pkg;
+package three_sipp_esr_pkg;
 
   // ---- Word geometry -------------------------------------------------------
   localparam int unsigned XLEN = 32;
@@ -113,6 +113,6 @@ package three_sipp_es_pkg;
   localparam logic [11:0] CSR_MARCHID  = 12'hF12;
   localparam logic [11:0] CSR_MHARTID  = 12'hF14;
 
-endpackage : three_sipp_es_pkg
+endpackage : three_sipp_esr_pkg
 
 `endif

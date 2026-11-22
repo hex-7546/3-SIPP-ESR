@@ -1,5 +1,5 @@
 # ============================================================================
-# three_sipp_es_arty_a7.xdc — Digilent Arty A7-100T (xc7a100tcsg324-1), LVCMOS33.
+# three_sipp_esr_arty_a7.xdc — Digilent Arty A7-100T (xc7a100tcsg324-1), LVCMOS33.
 # ============================================================================
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports CLK100]
 create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports CLK100]

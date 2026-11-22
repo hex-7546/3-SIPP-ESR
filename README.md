@@ -61,7 +61,7 @@ Synthesized and implemented with **AMD Vivado 2023.2** targeting the **Xilinx Ar
 
 *Full Evaluation SoC includes the processor core, CLINT timer, UART controller, GPIOs, and 32 KB dedicated true dual-port Block RAM.*
 
-Enable the secure configuration: `SECURE` RTL parameter or compile-time `-DTHREE_SIPP_ES_SECURE`.
+Enable the secure configuration: `SECURE` RTL parameter or compile-time `-DTHREE_SIPP_ESR_SECURE`.
 
 ---
 
@@ -178,7 +178,7 @@ python3 arch-test/run_arch_test.py --test jal-01    # single test by name
 | Privilege — Traps, `ecall`/`ebreak`, Misalignment | 16 |
 | **Total** | **90** |
 
-The `arch-test/` directory contains only the target port (`target/three_sipp_es/`) and the test runner (`run_arch_test.py`). The upstream RISC-V test suite is cloned on demand and is gitignored.
+The `arch-test/` directory contains only the target port (`target/three_sipp_esr/`) and the test runner (`run_arch_test.py`). The upstream RISC-V test suite is cloned on demand and is gitignored.
 
 ---
 
@@ -214,17 +214,17 @@ Detailed results and reproduction guide: [`rtos/README.md`](rtos/README.md)
 ├── build.sh                    fine-grained build & test driver
 ├── run_tests.sh                regression runner (checks against tests/expected.txt)
 ├── rtl/
-│   ├── three_sipp_es_core.sv   3-stage pipeline, predictor, forwarding
-│   ├── three_sipp_es_soc.sv    minimal SoC (IMEM, DRAM, CLINT, UART, tohost)
-│   ├── three_sipp_es_debug.sv  JTAG DTM + RISC-V Debug Module
-│   ├── three_sipp_es_axi_lite.sv  AXI4-Lite master bridge
-│   ├── three_sipp_es_uart.sv   UART peripheral
+│   ├── three_sipp_esr_core.sv   3-stage pipeline, predictor, forwarding
+│   ├── three_sipp_esr_soc.sv    minimal SoC (IMEM, DRAM, CLINT, UART, tohost)
+│   ├── three_sipp_esr_debug.sv  JTAG DTM + RISC-V Debug Module
+│   ├── three_sipp_esr_axi_lite.sv  AXI4-Lite master bridge
+│   ├── three_sipp_esr_uart.sv   UART peripheral
 │   └── common/                 shared datapath leaf cells (ALU, MulDiv, RegFile,
 │                               CSR, RVC, ImmGen, Branch, Decode, PMP)
 ├── arch-test/
 │   ├── Makefile                clone-on-demand + run targets
 │   ├── run_arch_test.py        multi-threaded compliance test runner
-│   └── target/three_sipp_es/  target port (linker script, entry, signature macros)
+│   └── target/three_sipp_esr/  target port (linker script, entry, signature macros)
 ├── tb/                         testbenches (smoke, RVFI, debug, priv, AXI, arch)
 ├── rtos/                       FreeRTOS port (kernel, BSP, verification apps)
 ├── coremark/                   CoreMark bare-metal port + run scripts

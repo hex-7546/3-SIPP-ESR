@@ -95,7 +95,7 @@ The 3-SIPP-ESR core was previously synthesized and routed on the Xilinx Artix-7 
 * **Target Clock:** 25.0 MHz (`clk25`, $40.0\text{ ns}$ period).
 * **Worst Negative Slack (WNS):** $+0.055\text{ ns}$ (**Timing Met**).
 * **Total Endpoints Constrained:** 80,255 (0 failing endpoints).
-* **Bitstream:** `three_sipp_es_arty_a7.bit` generated successfully.
+* **Bitstream:** `three_sipp_esr_arty_a7.bit` generated successfully.
 
 > [!NOTE]
 > **FPGA Timing Slack vs. Real-Time Guarantees:**
@@ -106,10 +106,10 @@ The 3-SIPP-ESR core was previously synthesized and routed on the Xilinx Artix-7 
 ## 6. Architectural Limits & Remaining Gaps
 
 1. **Unwired External Interrupt Line (`irq_ext`):**
-   * The core's internal CSRs support `MEIP` (cause 11), but in both `three_sipp_es_soc.sv` and `three_sipp_es_fpga.sv`, `irq_ext` is tied to `1'b0`.
+   * The core's internal CSRs support `MEIP` (cause 11), but in both `three_sipp_esr_soc.sv` and `three_sipp_esr_fpga.sv`, `irq_ext` is tied to `1'b0`.
    * Peripheral events from UART or external GPIO cannot trigger preemptive interrupts without integrating a PLIC or connecting peripheral IRQ wires to `irq_ext`.
 2. **Absence of Formally Proved WCET Bounds:**
-   * Maximum observed execution times were empirically measured. Multi-cycle operations (e.g. division in `three_sipp_es_muldiv.sv` taking up to 34 cycles) can introduce data-dependent variations that require static analysis tool qualification (e.g. aiT / OTAWA) for formal bounding.
+   * Maximum observed execution times were empirically measured. Multi-cycle operations (e.g. division in `three_sipp_esr_muldiv.sv` taking up to 34 cycles) can introduce data-dependent variations that require static analysis tool qualification (e.g. aiT / OTAWA) for formal bounding.
 3. **Memory Subsystem Uniformity:**
    * All tests operated with single-cycle internal SRAM (`dram` and `imem`). Integrating external bus masters (AXI4-Lite), off-chip DDR memory, or caches will introduce memory wait states and arbitration delays that must be factored into response-time interference terms.
 

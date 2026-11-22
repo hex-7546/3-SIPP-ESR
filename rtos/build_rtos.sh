@@ -3,7 +3,7 @@
 # build_rtos.sh -- build the 3-SIPP-ESR FreeRTOS demo into a $readmemh IMEM hex.
 #
 # Compiles the FreeRTOS kernel + RISC-V port + 3-SIPP-ESR BSP + demo app, links
-# with bsp/three_sipp_es.ld, and emits build/rtos.hex (one 32-bit word per line).
+# with bsp/three_sipp_esr.ld, and emits build/rtos.hex (one 32-bit word per line).
 # ==========================================================================
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -155,7 +155,7 @@ done
 
 "$GCC" -march=rv32imac_zicsr_zifencei -mabi=ilp32 -nostdlib -nostartfiles \
   -fno-pic -Wl,--no-relax -Wl,--gc-sections \
-  -T bsp/three_sipp_es.ld "${OBJS[@]}" -lgcc -o "build/${OUTBASE}.elf"
+  -T bsp/three_sipp_esr.ld "${OBJS[@]}" -lgcc -o "build/${OUTBASE}.elf"
 
 "$OBJCOPY" -O binary "build/${OUTBASE}.elf" "build/${OUTBASE}.bin"
 PY="${PYTHON:-$(command -v python3 || command -v python)}"

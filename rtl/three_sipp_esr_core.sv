@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_core.sv — RV32IM, 3-stage in-order pipeline (F | X | W).
+// three_sipp_esr_core.sv — RV32IM, 3-stage in-order pipeline (F | X | W).
 //
 // 3-SIPP-ESR is a compact, high-performance embedded-class core: a short 3-stage
 // pipeline with full forwarding and a dynamic branch predictor, in the space of
@@ -16,10 +16,10 @@
 //
 // Reuses the verified family leaf cells (ALU/muldiv/CSR/regfile).
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_core
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_core
+  import three_sipp_esr_pkg::*;
 #(
   parameter logic [XLEN-1:0] RESET_PC = 32'h0000_0000,
   // SECURE=1 adds User privilege mode + an 8-region PMP (M/U memory isolation,
@@ -30,7 +30,7 @@ module three_sipp_es_core
   // Dynamic branch prediction (gshare BHT + BTB), ON by default. Halfword-granular
   // (pc[1] in the index) so RVC 4-byte branches at 2-byte-aligned PCs can't alias a
   // neighbouring compressed instr into a false BTB hit. BPRED=0 = static predict-
-  // not-taken. Same design/verification path as three_sipp_es_core (see its comment).
+  // not-taken. Same design/verification path as three_sipp_esr_core (see its comment).
   parameter bit              BPRED     = 1,
   parameter int unsigned     BHT_BITS  = 8,   // 2^8 = 256 2-bit gshare counters
   parameter int unsigned     BTB_BITS  = 6,   // 2^6 = 64 direct-mapped BTB entries
@@ -160,7 +160,7 @@ module three_sipp_es_core
   // ---- Dynamic branch predictor: gshare BHT (2-bit counters) + BTB ----------
   // Lookup is combinational at F; update is at X where the branch/jal resolves.
   // JALR is unpredicted (register target). Halfword-granular indexing (pc[1] in
-  // the index) — see the three_sipp_es_core note: without it, an RVC compressed instr
+  // the index) — see the three_sipp_esr_core note: without it, an RVC compressed instr
   // aliases a straddling 4-byte branch's BTB entry, gets a false hit, is predicted
   // taken, and (being a non-branch) is never corrected in X -> pipeline diverges.
   localparam int unsigned BHT_ENTRIES = (1 << BHT_BITS);
@@ -191,7 +191,7 @@ module three_sipp_es_core
   wire [15:0] fetch_half = pc[1] ? imem_rdata[31:16] : imem_rdata[15:0];
   wire [31:0] c_instr32;
   wire        c_is_comp, c_illegal;
-  three_sipp_es_rvc u_rvc (.instr16(fetch_half), .instr32(c_instr32),
+  three_sipp_esr_rvc u_rvc (.instr16(fetch_half), .instr32(c_instr32),
                      .is_compressed(c_is_comp), .decomp_illegal(c_illegal));
 
   // a 32-bit instruction at an odd halfword needs a second fetch beat
@@ -202,7 +202,7 @@ module three_sipp_es_core
   wire [2:0]  fetched_len   = (straddle || !c_is_comp) ? 3'd4 : 3'd2;
 
   // ---- Return Address Stack (RAS) — predicts function returns (same design as
-  //      three_sipp_es_core; correctness-safe since X recomputes the real jalr_t) -----
+  //      three_sipp_esr_core; correctness-safe since X recomputes the real jalr_t) -----
   localparam int unsigned RAS_N = 8, RAS_PW = 3;
   logic [XLEN-1:0]  ras [0:RAS_N-1];
   logic [RAS_PW-1:0] ras_ptr; logic [RAS_PW:0] ras_cnt;
@@ -281,7 +281,7 @@ module three_sipp_es_core
 
   // immediate generator (shared leaf cell)
   logic [XLEN-1:0] imm_i, imm_s, imm_b, imm_u, imm_j, id_imm;
-  three_sipp_es_immgen u_imm (.instr(fx_instr),
+  three_sipp_esr_immgen u_imm (.instr(fx_instr),
     .imm_i(imm_i), .imm_s(imm_s), .imm_b(imm_b), .imm_u(imm_u), .imm_j(imm_j));
 
   logic [XLEN-1:0] rdata1, rdata2, wb_value;   // wb_value driven by W stage
@@ -293,7 +293,7 @@ module three_sipp_es_core
   wire             rf_we_eff  = dbg_gpr_we | rf_we;
   wire [4:0]       rf_wa_eff  = dbg_gpr_we ? dbg_ar_regno[4:0] : rf_wa;
   wire [XLEN-1:0]  rf_wd_eff  = dbg_gpr_we ? dbg_ar_wdata      : wb_value;
-  three_sipp_es_regfile u_rf (
+  three_sipp_esr_regfile u_rf (
     .clk(clk), .ra1(rf_ra1_eff), .ra2(rs2), .rd1(rdata1), .rd2(rdata2),
     .we(rf_we_eff), .wa(rf_wa_eff), .wd(rf_wd_eff)
   );
@@ -305,7 +305,7 @@ module three_sipp_es_core
   logic d_is_branch, d_is_jal, d_is_jalr, d_is_md, d_is_csr;
   logic d_is_ecall, d_is_ebreak, d_is_mret, d_illegal, d_uses_rs2;
 
-  three_sipp_es_decode u_dec (
+  three_sipp_esr_decode u_dec (
     .instr(fx_instr), .imm_i(imm_i), .imm_s(imm_s), .imm_b(imm_b),
     .imm_u(imm_u), .imm_j(imm_j),
     .alu_op(d_alu_op), .br_op(d_br_op), .md_op(d_md_op), .wb_sel(d_wb_sel),
@@ -317,7 +317,7 @@ module three_sipp_es_core
     .illegal(d_illegal), .uses_rs2(d_uses_rs2), .id_imm(id_imm)
   );
 
-  // ---- RV32 'A' (atomics) inline decode (three_sipp_es_decode untouched) ----------
+  // ---- RV32 'A' (atomics) inline decode (three_sipp_esr_decode untouched) ----------
   // AMO opcode 0101111, funct3=010 (word). Address = rs1 (op1); rd = old memory.
   // No load-use stall needed: 3-SIPP-ESR forwards only W->X, and an AMO stays in W
   // (frozen for its store beat) while a dependent waits in X — so W->X forwarding
@@ -338,7 +338,7 @@ module three_sipp_es_core
   // FENCE.I instruction (Zifencei extension) triggers pipeline flush and refetch
   wire        is_fencei  = (fx_instr[6:0] == 7'b0001111) && (funct3 == 3'b001);
 
-  // ---- RV32 'N' (user-level trap) URET, inline (three_sipp_es_decode untouched) ----
+  // ---- RV32 'N' (user-level trap) URET, inline (three_sipp_esr_decode untouched) ----
   // URET = 0x00200073 (funct12=0x002, funct3=0). The shared decoder flags it
   // illegal (it only knows MRET); 3-SIPP-ESR recognises it here when SECURE (the N
   // overlay below owns the user-trap return). Non-SECURE => stays illegal.
@@ -423,14 +423,14 @@ module three_sipp_es_core
   wire [XLEN-1:0] alu_a = d_use_pc  ? fx_pc  : op1;
   wire [XLEN-1:0] alu_b = d_use_imm ? id_imm : op2;
   logic [XLEN-1:0] alu_y;
-  three_sipp_es_alu u_alu (.op(d_alu_op), .a(alu_a), .b(alu_b), .y(alu_y));
+  three_sipp_esr_alu u_alu (.op(d_alu_op), .a(alu_a), .b(alu_b), .y(alu_y));
 
   logic br_taken;
-  three_sipp_es_branch u_br (.br_op(d_br_op), .a(op1), .b(op2), .taken(br_taken));
+  three_sipp_esr_branch u_br (.br_op(d_br_op), .a(op1), .b(op2), .taken(br_taken));
 
   // ---- multiply/divide -----------------------------------------------------
   logic md_busy, md_done, md_inflight; logic [XLEN-1:0] md_result;
-  three_sipp_es_muldiv u_md (
+  three_sipp_esr_muldiv u_md (
     .clk(clk), .rst(rst),
     .start(fx_valid && d_is_md && !md_inflight && !md_busy),
     .op(d_md_op), .a(op1), .b(op2),
@@ -452,7 +452,7 @@ module three_sipp_es_core
   // N-extension: user-level traps (uepc/ucause/utvec/uscratch/utval/ustatus/
   // uie/uip + URET + medeleg delegation to U). INLINED, SECURE-only.
   // ==========================================================================
-  // The shared three_sipp_es_csr models only M-mode; it cannot be extended (byte-
+  // The shared three_sipp_esr_csr models only M-mode; it cannot be extended (byte-
   // identical family build). So the N architectural state and the delegate-to-U
   // trap/return semantics live entirely here, layered over the M-mode CSR:
   //   * A synchronous exception taken in U-mode whose cause bit is set in medeleg
@@ -510,15 +510,15 @@ module three_sipp_es_core
   // Hardware triggers (RISC-V Debug "Sdtrig" / mcontrol6) — INLINED
   // ==========================================================================
   // E-class ships TRIGGERS=2. Rather than instantiate the external
-  // three_sipp_es_trigger cell (which is NOT in the shared compliance file-list, so
+  // three_sipp_esr_trigger cell (which is NOT in the shared compliance file-list, so
   // adding it would break the byte-identical build), the same mcontrol6 trigger
   // register file + equal-match logic is inlined here, entirely local to
-  // 3-SIPP-ESR. It mirrors three_sipp_es_trigger.sv exactly (see that cell's header for
+  // 3-SIPP-ESR. It mirrors three_sipp_esr_trigger.sv exactly (see that cell's header for
   // the full mcontrol6 tdata1 layout). Two trigger slots, each selectable as an
   // EXECUTE (PC-match) breakpoint or a LOAD/STORE (address-match) watchpoint.
   // A match with action=1 requests Debug-Mode entry (like ebreak-to-debug);
   // action=0 raises a breakpoint exception. State never touches the shared
-  // three_sipp_es_csr, so it elaborates cleanly.
+  // three_sipp_esr_csr, so it elaborates cleanly.
   //
   //   tselect (0x7A0) — selects which slot tdata1/tdata2 addresses.
   //   tdata1  (0x7A1) — per-slot mcontrol6 control (type in [31:28]=6).
@@ -569,7 +569,7 @@ module three_sipp_es_core
   logic [XLEN-1:0] csr_rdata, csr_wval;
   // effective CSR read: trigger CSRs (0x7A0..0x7A2/0x7A4) come from the local
   // trigger file, N user CSRs (ustatus/uie/utvec/... + medeleg) from the local N
-  // overlay, everything else from the shared three_sipp_es_csr.
+  // overlay, everything else from the shared three_sipp_esr_csr.
   wire [XLEN-1:0] csr_rd_eff = is_trig_csr ? trig_csr_rdata :
                                is_ucsr     ? ucsr_rdata     : csr_rdata;
   always_comb unique case (csr_fn)
@@ -584,8 +584,8 @@ module three_sipp_es_core
   wire [XLEN-1:0] trig_wdata = csr_wdata_eff;
 
   // ---- privilege + PMP (security: M/U memory isolation) --------------------
-  // SECURE-only. The shared three_sipp_es_csr owns priv/PMP architectural state; two
-  // combinational three_sipp_es_pmp checkers validate the fetch address (fx_pc) and the
+  // SECURE-only. The shared three_sipp_esr_csr owns priv/PMP architectural state; two
+  // combinational three_sipp_esr_pmp checkers validate the fetch address (fx_pc) and the
   // load/store address (alu_y) — both known here in X, exactly where every other
   // synchronous trap resolves. Default (SECURE=0) ties everything off: priv stays
   // M, no PMP logic, behaviour byte-identical.
@@ -614,12 +614,12 @@ module three_sipp_es_core
   wire            ls_we   = d_mem_we | (amo_valid & !is_lr);
   generate if (SECURE) begin : g_pmp
     wire pmp_fetch_fault, pmp_data_fault;
-    three_sipp_es_pmp #(.NPMP(NPMP)) u_pmp_if (    // instruction-fetch check
+    three_sipp_esr_pmp #(.NPMP(NPMP)) u_pmp_if (    // instruction-fetch check
       .cfg(pmpcfg_w[8*NPMP-1:0]), .addrreg(pmpaddr_w[32*NPMP-1:0]),
       .addr(fx_pc), .priv_m(fetch_m), .mmwp(mmwp_w), .mml(mml_w), .do_r(1'b0), .do_w(1'b0), .do_x(1'b1),
       .fault(pmp_fetch_fault)
     );
-    three_sipp_es_pmp #(.NPMP(NPMP)) u_pmp_ls (    // load/store check (post-address)
+    three_sipp_esr_pmp #(.NPMP(NPMP)) u_pmp_ls (    // load/store check (post-address)
       .cfg(pmpcfg_w[8*NPMP-1:0]), .addrreg(pmpaddr_w[32*NPMP-1:0]),
       .addr(ls_addr), .priv_m(data_m), .mmwp(mmwp_w), .mml(mml_w),
       .do_r(ls_re), .do_w(ls_we), .do_x(1'b0),
@@ -819,7 +819,7 @@ module three_sipp_es_core
     end
   end endgenerate
 
-  three_sipp_es_csr #(.MISA_VAL((32'b01<<30)|(1<<8)|(1<<12)|(1<<2)|(1<<1)|(1<<0)),  // RV32IMAC + Zbb (B)
+  three_sipp_esr_csr #(.MISA_VAL((32'b01<<30)|(1<<8)|(1<<12)|(1<<2)|(1<<1)|(1<<0)),  // RV32IMAC + Zbb (B)
                 .U_MODE(SECURE), .PMP_REGIONS(SECURE ? NPMP : 0)) u_csr (   // secure opt
     .clk(clk), .rst(rst),
     .csr_addr(csr_addr_eff), .csr_rdata(csr_rdata),

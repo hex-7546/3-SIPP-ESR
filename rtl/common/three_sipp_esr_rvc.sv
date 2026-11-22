@@ -1,10 +1,10 @@
 // ============================================================================
-// three_sipp_es_rvc.sv — RV32C 16-bit → 32-bit instruction expander (combinational)
+// three_sipp_esr_rvc.sv — RV32C 16-bit → 32-bit instruction expander (combinational)
 // ============================================================================
 
 
 
-module three_sipp_es_rvc (
+module three_sipp_esr_rvc (
   input  logic [15:0] instr16,
   output logic [31:0] instr32,
   output logic        is_compressed,

@@ -1,12 +1,12 @@
 // ============================================================================
-// three_sipp_es_regfile.sv — 32x32 register file. x0 hard-wired to zero.
+// three_sipp_esr_regfile.sv — 32x32 register file. x0 hard-wired to zero.
 // Two async read ports, one sync write port. Write-first transparency is
 // handled by forwarding in the core, not here.
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_regfile
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_regfile
+  import three_sipp_esr_pkg::*;
 #(
   // 1 = WB->ID transparency (needed by the pipelined cores). Multi-cycle cores
   // must set this 0: their write data is combinational, so transparency would

@@ -17,7 +17,7 @@ The 3-SIPP-ESR processor accepts three standard RISC-V Machine-mode interrupt so
 | `irq_ext` | MEIP (Machine External) | `0x8000000B` | Platform Interrupt Controller | **TIED TO 0 IN RTL** |
 
 ### 1.1 Architectural Interrupt Pipeline Path
-In `rtl/three_sipp_es_core.sv`, interrupt acceptance is gated strictly at the execute (`X`) stage boundary:
+In `rtl/three_sipp_esr_core.sv`, interrupt acceptance is gated strictly at the execute (`X`) stage boundary:
 ```verilog
 wire take_irq = fx_valid && !ex_freeze && irq_req && !ex_trap && !dbg_freeze &&
                 !d_is_mret && !is_uret &&
@@ -58,13 +58,13 @@ When `take_irq` asserts:
   * Context switch is triggered via `portYIELD_FROM_ISR(xHigherPriorityTaskWoken)`.
 
 ### 2.3 Machine External Interrupt (MEIP) - Unwired in SoC
-* In `rtl/three_sipp_es_soc.sv`:
+* In `rtl/three_sipp_esr_soc.sv`:
   ```verilog
-  three_sipp_es_core ... .irq_ext(1'b0) ...
+  three_sipp_esr_core ... .irq_ext(1'b0) ...
   ```
-* In `fpga/three_sipp_es_fpga.sv`:
+* In `fpga/three_sipp_esr_fpga.sv`:
   ```verilog
-  three_sipp_es_core ... .irq_ext(1'b0) ...
+  three_sipp_esr_core ... .irq_ext(1'b0) ...
   ```
 * **Implication:** The core datapath and CSR logic fully implement MEIP handling (`mie[11]`, `mip[11]`, cause 11), but no PLIC (Platform-Level Interrupt Controller) is instantiated in the current SoC. All peripheral events (UART) are currently polled or serviced synchronously.
 

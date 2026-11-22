@@ -11,9 +11,9 @@ capability.
 | **Default** | Machine only | — | breakpoint / watchpoint | smallest footprint |
 | **`SECURE`** | Machine + User (+ user-trap delegation) | 8-region PMP + Smepmp | breakpoint / watchpoint | isolation & introspection |
 
-Enable the secure configuration with the `SECURE` parameter of `three_sipp_es_core`
-/ `three_sipp_es_soc`, or at compile time with `-DTHREE_SIPP_ES_SECURE` (read by
-`three_sipp_es_soc`).
+Enable the secure configuration with the `SECURE` parameter of `three_sipp_esr_core`
+/ `three_sipp_esr_soc`, or at compile time with `-DTHREE_SIPP_ESR_SECURE` (read by
+`three_sipp_esr_soc`).
 
 ## Always present
 
@@ -33,7 +33,7 @@ Enable the secure configuration with the `SECURE` parameter of `three_sipp_es_co
 | User mode + user-trap delegation | `SECURE` | M/U privilege; delegation follows the withdrawn `N` draft (never ratified) |
 | PMP + Smepmp | `SECURE` | 8 regions, TOR/NA4/NAPOT, `mseccfg` |
 | Debug triggers | always (both builds) | two `mcontrol6` triggers, execute + load/store match |
-| AXI4-Lite bus | instantiate `three_sipp_es_axi_lite` | optional; default SoC uses the native interface |
+| AXI4-Lite bus | instantiate `three_sipp_esr_axi_lite` | optional; default SoC uses the native interface |
 | FreeRTOS | `rtos/` | preemptive RTOS port + demo |
 
 ## Build-driver targets

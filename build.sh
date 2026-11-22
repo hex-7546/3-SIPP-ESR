@@ -20,14 +20,14 @@ ACTION="${1:-sim}"
 
 R=rtl
 C=rtl/common
-DBG=rtl/three_sipp_es_debug.sv
+DBG=rtl/three_sipp_esr_debug.sv
 
 # Shared datapath leaf cells, in elaboration order.
 CELLS=( \
-  "$C/three_sipp_es_pkg.sv" "$C/three_sipp_es_alu.sv" "$C/three_sipp_es_regfile.sv" \
-  "$C/three_sipp_es_muldiv.sv" "$C/three_sipp_es_csr.sv" "$C/three_sipp_es_rvc.sv" \
-  "$C/three_sipp_es_immgen.sv" "$C/three_sipp_es_branch.sv" "$C/three_sipp_es_decode.sv" \
-  "$C/three_sipp_es_pmp.sv" )
+  "$C/three_sipp_esr_pkg.sv" "$C/three_sipp_esr_alu.sv" "$C/three_sipp_esr_regfile.sv" \
+  "$C/three_sipp_esr_muldiv.sv" "$C/three_sipp_esr_csr.sv" "$C/three_sipp_esr_rvc.sv" \
+  "$C/three_sipp_esr_immgen.sv" "$C/three_sipp_esr_branch.sv" "$C/three_sipp_esr_decode.sv" \
+  "$C/three_sipp_esr_pmp.sv" )
 
 # run_check PASS_REGEX CMD...
 # Runs a simulator and echoes its output. Fails (exit 1) if the simulator exits
@@ -63,8 +63,8 @@ if [[ "$ACTION" == "priv" ]]; then
   "$PY" programs/build_priv.py
   "$PY" programs/build_trig.py
   "$PY" programs/build_ntrap.py
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_priv -I"$C" -I"$R" \
-    "${CELLS[@]}" "$R/three_sipp_es_core.sv" tb/tb_three_sipp_es_priv.sv 2>/dev/null
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_priv -I"$C" -I"$R" \
+    "${CELLS[@]}" "$R/three_sipp_esr_core.sv" tb/tb_three_sipp_esrr_priv.sv 2>/dev/null
   fail=0
   for t in ustore_fault ustore_ok ecall_u ecall_m ifetch_fault ifetch_ok ucsr_u ucsr_m \
            uload_fault uload_ok mml_mexec mml_mexec_off mml_uload mml_uload_off mml_cfg mtvec_mode uamo_fault uamo_ok \
@@ -73,7 +73,7 @@ if [[ "$ACTION" == "priv" ]]; then
     [[ -f programs/build/priv_$t.hex  ]] && hex=programs/build/priv_$t.hex
     [[ -f programs/build/trig_$t.hex  ]] && hex=programs/build/trig_$t.hex
     [[ -f programs/build/ntrap_$t.hex ]] && hex=programs/build/ntrap_$t.hex
-    r=$(sim/tb_three_sipp_es_priv +IMEM="$hex" 2>&1 | grep RESULT || true)
+    r=$(sim/tb_three_sipp_esrr_priv +IMEM="$hex" 2>&1 | grep RESULT || true)
     printf "  %-16s %s\n" "$t" "${r:-RESULT: FAIL (no result line)}"
     [[ "$r" == *PASS* ]] || fail=1
   done
@@ -102,48 +102,48 @@ fi
 
 if [[ "$ACTION" == "debug" ]]; then
   echo "Building 3-SIPP-ESR debug (JTAG DM) sim..."
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_debug -I"$C" -I"$R" \
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_debug -I"$C" -I"$R" \
     "${CELLS[@]}" "$DBG" \
-    "$R/three_sipp_es_core.sv" "$R/three_sipp_es_uart.sv" "$R/three_sipp_es_soc.sv" \
-    tb/tb_three_sipp_es_debug.sv
-  run_check '^DEBUG: PASS' sim/tb_three_sipp_es_debug
+    "$R/three_sipp_esr_core.sv" "$R/three_sipp_esr_uart.sv" "$R/three_sipp_esr_soc.sv" \
+    tb/tb_three_sipp_esrr_debug.sv
+  run_check '^DEBUG: PASS' sim/tb_three_sipp_esrr_debug
   exit 0
 fi
 
 if [[ "$ACTION" == "axi" ]]; then
   # OPTIONAL AXI4-Lite MASTER bridge — standalone leaf cell + slave-mem BFM tb.
-  # The default three_sipp_es_soc + compliance path never instantiate it (unchanged).
+  # The default three_sipp_esr_soc + compliance path never instantiate it (unchanged).
   echo "Building 3-SIPP-ESR AXI4-Lite MASTER bridge sim..."
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_axi -I"$C" -I"$R" \
-    "$C/three_sipp_es_pkg.sv" "$R/three_sipp_es_axi_lite.sv" tb/tb_three_sipp_es_axi.sv
-  run_check '^AXI: PASS' sim/tb_three_sipp_es_axi
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_axi -I"$C" -I"$R" \
+    "$C/three_sipp_esr_pkg.sv" "$R/three_sipp_esr_axi_lite.sv" tb/tb_three_sipp_esrr_axi.sv
+  run_check '^AXI: PASS' sim/tb_three_sipp_esrr_axi
   exit 0
 fi
 
 if [[ "$ACTION" == "fpga" ]]; then
   echo "Building FPGA SoC sim (UART banner + LED blink)..."
   bash sw/build_fpga_hello.sh
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_fpga -DSIMULATION -I"$C" -I"$R" \
-    "${CELLS[@]}" "$R/three_sipp_es_core.sv" "$R/three_sipp_es_uart.sv" \
-    fpga/three_sipp_es_fpga.sv fpga/tb_three_sipp_es_fpga.sv
-  run_check '^FPGA: PASS' sim/tb_three_sipp_es_fpga
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_fpga -DSIMULATION -I"$C" -I"$R" \
+    "${CELLS[@]}" "$R/three_sipp_esr_core.sv" "$R/three_sipp_esr_uart.sv" \
+    fpga/three_sipp_esr_fpga.sv fpga/tb_three_sipp_esrr_fpga.sv
+  run_check '^FPGA: PASS' sim/tb_three_sipp_esrr_fpga
   exit 0
 fi
 
 # ---- default: smoke (+ optional cosim / rvfi / zcb / trig) ------------------
 "$PY" programs/build_smoke.py
 echo "Compiling..."
-"$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es -I"$C" -I"$R" \
+"$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esr -I"$C" -I"$R" \
   "${CELLS[@]}" "$DBG" \
-  "$R/three_sipp_es_core.sv" "$R/three_sipp_es_uart.sv" "$R/three_sipp_es_soc.sv" \
-  tb/tb_three_sipp_es.sv
+  "$R/three_sipp_esr_core.sv" "$R/three_sipp_esr_uart.sv" "$R/three_sipp_esr_soc.sv" \
+  tb/tb_three_sipp_esr.sv
 echo "Running smoke..."
-run_check '^\[TB\] PASS' sim/tb_three_sipp_es +IMEM=programs/build/smoke.hex
+run_check '^\[TB\] PASS' sim/tb_three_sipp_esr +IMEM=programs/build/smoke.hex
 
 if [[ "$ACTION" == "cosim" ]]; then
   echo "Co-simulating against golden model..."
   VVP="" VERILATOR="$VRL" "$PY" tools/cosim.py \
-      --hex programs/build/smoke.hex --sim sim/tb_three_sipp_es
+      --hex programs/build/smoke.hex --sim sim/tb_three_sipp_esr
 fi
 
 if [[ "$ACTION" == "zcb" ]]; then
@@ -153,8 +153,8 @@ if [[ "$ACTION" == "zcb" ]]; then
   echo "Building + running the Zcb directed test and its negative control..."
   "$PY" programs/build_zcb.py
   "$PY" programs/build_zcb.py --neg
-  run_check '^\[TB\] PASS' sim/tb_three_sipp_es +IMEM=programs/build/zcb.hex
-  neg=$(sim/tb_three_sipp_es +IMEM=programs/build/zcb_neg.hex 2>&1 || true)
+  run_check '^\[TB\] PASS' sim/tb_three_sipp_esr +IMEM=programs/build/zcb.hex
+  neg=$(sim/tb_three_sipp_esr +IMEM=programs/build/zcb_neg.hex 2>&1 || true)
   if grep -q '^\[TB\] FAIL (code 2)' <<< "$neg"; then
     echo "zcb negative control: failed as designed (tohost=2)"
   else
@@ -169,31 +169,31 @@ if [[ "$ACTION" == "trig" ]]; then
   echo "Running the trigger tests on the default SoC..."
   "$PY" programs/build_trig.py
   for t in exec_hit exec_miss store_hit store_miss; do
-    run_check '^\[TB\] PASS' sim/tb_three_sipp_es +IMEM=programs/build/trig_$t.hex
+    run_check '^\[TB\] PASS' sim/tb_three_sipp_esr +IMEM=programs/build/trig_$t.hex
   done
   echo "TRIG: PASS"
 fi
 
 if [[ "$ACTION" == "rvfi" ]]; then
   echo "Building RVFI (riscv-formal interface) self-check..."
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_rvfi -DRISCV_FORMAL -I"$C" -I"$R" \
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_rvfi -DRISCV_FORMAL -I"$C" -I"$R" \
     "${CELLS[@]}" "$DBG" \
-    "$R/three_sipp_es_core.sv" "$R/three_sipp_es_uart.sv" "$R/three_sipp_es_soc.sv" \
-    tb/tb_three_sipp_es_rvfi.sv
-  run_check '^RVFI: PASS' sim/tb_three_sipp_es_rvfi +IMEM=programs/build/smoke.hex
+    "$R/three_sipp_esr_core.sv" "$R/three_sipp_esr_uart.sv" "$R/three_sipp_esr_soc.sv" \
+    tb/tb_three_sipp_esrr_rvfi.sv
+  run_check '^RVFI: PASS' sim/tb_three_sipp_esrr_rvfi +IMEM=programs/build/smoke.hex
 fi
 
 if [[ "$ACTION" == "arch-sim" ]]; then
   echo "Building 3-SIPP-ESR RISC-V Architectural Test simulator..."
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_arch -I"$C" -I"$R" \
-    "${CELLS[@]}" "$R/three_sipp_es_core.sv" tb/tb_three_sipp_es_arch.sv
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_arch -I"$C" -I"$R" \
+    "${CELLS[@]}" "$R/three_sipp_esr_core.sv" tb/tb_three_sipp_esrr_arch.sv
   exit 0
 fi
 
 if [[ "$ACTION" == "arch" ]]; then
   echo "Building 3-SIPP-ESR RISC-V Architectural Test simulator..."
-  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_es_arch -I"$C" -I"$R" \
-    "${CELLS[@]}" "$R/three_sipp_es_core.sv" tb/tb_three_sipp_es_arch.sv
+  "$VRL" --binary -j 0 -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --timescale 1ns/1ps --Mdir sim -o tb_three_sipp_esrr_arch -I"$C" -I"$R" \
+    "${CELLS[@]}" "$R/three_sipp_esr_core.sv" tb/tb_three_sipp_esrr_arch.sv
   echo "Running RISC-V Architectural Compliance Test suite..."
   "$PY" arch-test/run_arch_test.py
   exit $?

@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_muldiv.sv — RV32M multiply/divide unit (multi-cycle).
+// three_sipp_esr_muldiv.sv — RV32M multiply/divide unit (multi-cycle).
 //
 //   * MUL family : 1-cycle latched 64-bit product (picks hi/lo, signedness).
 //   * DIV family : iterative shift-subtract over magnitudes (32 steps) plus a
@@ -8,10 +8,10 @@
 // Handshake: pulse `start` for one cycle with op/a/b valid. `busy` stays high
 // while computing; `done` pulses for one cycle when `result` is valid.
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_muldiv
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_muldiv
+  import three_sipp_esr_pkg::*;
 (
   input  logic              clk,
   input  logic              rst,

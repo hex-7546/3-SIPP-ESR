@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_pmp.sv — RISC-V Physical Memory Protection (PMP) checker.
+// three_sipp_esr_pmp.sv — RISC-V Physical Memory Protection (PMP) checker.
 //
 // Combinational access check for one memory reference (fetch / load / store).
 // Implements the standard PMP matching modes per region — OFF / TOR / NA4 /
@@ -20,7 +20,7 @@
 // ============================================================================
 
 
-module three_sipp_es_pmp #(
+module three_sipp_esr_pmp #(
   parameter int NPMP = 8
 )(
   input  wire [8*NPMP-1:0]  cfg,       // {pmpNcfg, ..., pmp0cfg}

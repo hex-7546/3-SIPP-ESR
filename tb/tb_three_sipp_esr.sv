@@ -1,10 +1,10 @@
 // ============================================================================
-// tb_three_sipp_es.sv — Self-checking testbench for three_sipp_es_soc.
+// tb_three_sipp_esr.sv — Self-checking testbench for three_sipp_esr_soc.
 //
-//   sim/tb_three_sipp_es +IMEM=programs/build/smoke.hex
-//   sim/tb_three_sipp_es +IMEM=... +TRACE=1        (emit retire trace for co-sim)
-//   sim/tb_three_sipp_es +IMEM=... +DRAM=<hex>     (also preload DRAM at 0x8000_0000)
-//   sim/tb_three_sipp_es +IMEM=... +MAXCYCLES=<n>  (cycle budget, default 50,000,000)
+//   sim/tb_three_sipp_esr +IMEM=programs/build/smoke.hex
+//   sim/tb_three_sipp_esr +IMEM=... +TRACE=1        (emit retire trace for co-sim)
+//   sim/tb_three_sipp_esr +IMEM=... +DRAM=<hex>     (also preload DRAM at 0x8000_0000)
+//   sim/tb_three_sipp_esr +IMEM=... +MAXCYCLES=<n>  (cycle budget, default 50,000,000)
 //
 // Exit protocol: a store to tohost (0x2000_0000) ends the run.
 //   tohost == 1  -> PASS
@@ -12,7 +12,7 @@
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_es;
+module tb_three_sipp_esr;
   logic clk = 1'b0;
   always #5 clk = ~clk;
 
@@ -25,7 +25,7 @@ module tb_three_sipp_es;
   logic        retire_rd_we;
   logic [4:0]  retire_rd;
 
-  three_sipp_es_soc dut (
+  three_sipp_esr_soc dut (
     .clk(clk), .rst(rst),
     .tck(1'b0), .tms(1'b0), .tdi(1'b0), .tdo(),
     .tohost(tohost), .tohost_we(tohost_we),
@@ -62,8 +62,8 @@ module tb_three_sipp_es;
     end
 
     if ($test$plusargs("VCD")) begin
-      $dumpfile("tb_three_sipp_es.vcd");
-      $dumpvars(0, tb_three_sipp_es);
+      $dumpfile("tb_three_sipp_esr.vcd");
+      $dumpvars(0, tb_three_sipp_esr);
     end
 
     rst = 1'b1;

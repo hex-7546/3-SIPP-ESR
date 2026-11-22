@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_uart.sv -- 3-SIPP-ESR-owned 8-N-1 UART (console).
+// three_sipp_esr_uart.sv -- 3-SIPP-ESR-owned 8-N-1 UART (console).
 //
 // Modeled on vajra_uart but owned by 3-SIPP-ESR. Word-addressed register map
 // (the SoC presents word-aligned CPU accesses):
@@ -18,7 +18,7 @@
 // ============================================================================
 
 
-module three_sipp_es_uart #(
+module three_sipp_esr_uart #(
   parameter int CLK_HZ       = 50_000_000,
   parameter int BAUD         = 115_200,
   parameter int BAUD_DIV_RST = CLK_HZ / BAUD

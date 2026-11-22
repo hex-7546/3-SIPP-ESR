@@ -1,14 +1,14 @@
 // ============================================================================
-// three_sipp_es_csr.sv — Machine-mode CSR file with trap/MRET support.
+// three_sipp_esr_csr.sv — Machine-mode CSR file with trap/MRET support.
 //
 // Single read port (combinational) + single write port (CSR instructions),
 // plus a trap interface used by the EX stage. Implements the minimal M-mode
 // register set needed to take ECALL/EBREAK/illegal traps and return via MRET.
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_csr
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_csr
+  import three_sipp_esr_pkg::*;
 #(
   // misa value advertised by this core. Default RV32IM; each core overrides to
   // reflect its true extensions (C, F, X-vector, ...). base=01 (32-bit) in

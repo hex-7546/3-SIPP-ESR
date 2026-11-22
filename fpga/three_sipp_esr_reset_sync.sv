@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_reset_sync.sv
+// three_sipp_esr_reset_sync.sv
 //
 // Async-assert / sync-deassert reset synchronizer.
 //
@@ -19,7 +19,7 @@
 
 
 
-module three_sipp_es_reset_sync #(
+module three_sipp_esr_reset_sync #(
     parameter int  DEPTH       = 3,
     parameter bit  ACTIVE_HIGH = 1'b1
 ) (

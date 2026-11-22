@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_arty_a7.sv — Digilent Arty A7-100T top for the 3-SIPP-ESR SoC.
+// three_sipp_esr_arty_a7.sv — Digilent Arty A7-100T top for the 3-SIPP-ESR SoC.
 // Device: xc7a100tcsg324-1.  Runs directly at the board 100 MHz oscillator.
 //
 //   CLK100        E3    ck_rst  C2 (active-low)
@@ -10,7 +10,7 @@
 // ============================================================================
 
 
-module three_sipp_es_arty_a7 (
+module three_sipp_esr_arty_a7 (
   input  wire       CLK100,
   input  wire       ck_rst,        // active-low
   output wire [3:0] led,
@@ -18,7 +18,7 @@ module three_sipp_es_arty_a7 (
   output wire       uart_rxd_out   // TX
 );
   wire sys_rst;
-  three_sipp_es_reset_sync #(.DEPTH(3), .ACTIVE_HIGH(1'b1)) u_rst (
+  three_sipp_esr_reset_sync #(.DEPTH(3), .ACTIVE_HIGH(1'b1)) u_rst (
       .clk(CLK100), .async_rst_in(~ck_rst), .sync_rst_out(sys_rst));
 
   reg [1:0] clk_div = 0;
@@ -32,7 +32,7 @@ module three_sipp_es_arty_a7 (
   BUFG u_bufg_bram (.I(clk_bram_q), .O(clk_bram));
 
   wire [7:0] soc_leds;
-  three_sipp_es_fpga #(.CLK_HZ(25_000_000), .UART_BAUD(115_200),
+  three_sipp_esr_fpga #(.CLK_HZ(25_000_000), .UART_BAUD(115_200),
                   .MEM_WORDS(8192), .MEMFILE("firmware.mem")) u_soc (
       .clk(clk25), .clk_bram(clk_bram), .rst(sys_rst),
       .leds(soc_leds), .serial_tx(uart_rxd_out), .serial_rx(uart_txd_in),

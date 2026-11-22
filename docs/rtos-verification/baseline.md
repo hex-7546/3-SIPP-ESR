@@ -56,7 +56,7 @@ All 9 repository regression targets pass cleanly with exact count matching.
 
 * **Execution Command:** `bash build.sh rtos`
 * **Exit Code:** `0`
-* **Harness:** `rtos/run_rtos.py` driving Verilator testbench `tb/tb_three_sipp_es_rtos.sv`
+* **Harness:** `rtos/run_rtos.py` driving Verilator testbench `tb/tb_three_sipp_esrr_rtos.sv`
 * **Observed Transcript:**
   ```text
   [BOOT]freertos
@@ -112,7 +112,7 @@ All 9 repository regression targets pass cleanly with exact count matching.
 1. **Interrupt Lines to Core:**
    * `irq_timer`: Asserted when `mtime >= mtimecmp` (MTIP, cause 7).
    * `irq_soft`: Driven by `msip` (MSIP, cause 3).
-   * `irq_ext`: Machine External Interrupt line (MEIP, cause 11). **NOTE:** In `three_sipp_es_soc.sv` and `three_sipp_es_fpga.sv`, `irq_ext` is tied to `1'b0`.
+   * `irq_ext`: Machine External Interrupt line (MEIP, cause 11). **NOTE:** In `three_sipp_esr_soc.sv` and `three_sipp_esr_fpga.sv`, `irq_ext` is tied to `1'b0`.
 2. **Interrupt Acceptance Condition (`take_irq`):**
    Interrupts are accepted on committing, non-branching instructions when `mstatus.MIE == 1` and `mie[cause] == 1`:
    ```verilog

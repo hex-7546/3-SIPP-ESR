@@ -1,5 +1,5 @@
 // ============================================================================
-// three_sipp_es_soc.sv — Minimal SoC wrapper for simulation/bring-up.
+// three_sipp_esr_soc.sv — Minimal SoC wrapper for simulation/bring-up.
 //
 // Address map:
 //   0x0000_0000 .. : IMEM  (program, word array, combinational read; data-port
@@ -13,34 +13,34 @@
 // public `imem` array. Functional model: combinational memory; the FPGA
 // targets (see fpga/) wrap registered BRAM around the same core.
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
 // Build-time selection of the SECURE configuration (M/U privilege, PMP and
-// user-trap delegation): pass -DTHREE_SIPP_ES_SECURE, or override the SECURE parameter.
-// -DTHREE_SIPP_ES_IMEM_WRITABLE (or IMEM_DATA_WRITE=1) lets data-port stores write IMEM
+// user-trap delegation): pass -DTHREE_SIPP_ESR_SECURE, or override the SECURE parameter.
+// -DTHREE_SIPP_ESR_IMEM_WRITABLE (or IMEM_DATA_WRITE=1) lets data-port stores write IMEM
 // (self-modifying / test code that keeps data in its code section); by default
 // such stores are dropped.
-`ifdef THREE_SIPP_ES_IMEM_WRITABLE
-  `define THREE_SIPP_ES_SOC_IMEM_WRITE 1'b1
+`ifdef THREE_SIPP_ESR_IMEM_WRITABLE
+  `define THREE_SIPP_ESR_SOC_IMEM_WRITE 1'b1
 `else
-  `define THREE_SIPP_ES_SOC_IMEM_WRITE 1'b0
+  `define THREE_SIPP_ESR_SOC_IMEM_WRITE 1'b0
 `endif
-`ifdef THREE_SIPP_ES_SECURE
-  `define THREE_SIPP_ES_SOC_SECURE 1'b1
+`ifdef THREE_SIPP_ESR_SECURE
+  `define THREE_SIPP_ESR_SOC_SECURE 1'b1
 `else
-  `define THREE_SIPP_ES_SOC_SECURE 1'b0
+  `define THREE_SIPP_ESR_SOC_SECURE 1'b0
 `endif
 
-module three_sipp_es_soc
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_soc
+  import three_sipp_esr_pkg::*;
 #(
   parameter int unsigned IMEM_WORDS = 8192,
   parameter int unsigned DRAM_WORDS = 8192,
   parameter logic [XLEN-1:0] DRAM_BASE   = 32'h8000_0000,
   parameter logic [XLEN-1:0] TOHOST_ADDR = 32'h2000_0000,
   parameter logic [XLEN-1:0] UART_BASE   = 32'h1000_0000,
-  parameter bit              SECURE      = `THREE_SIPP_ES_SOC_SECURE,
-  parameter bit              IMEM_DATA_WRITE = `THREE_SIPP_ES_SOC_IMEM_WRITE
+  parameter bit              SECURE      = `THREE_SIPP_ESR_SOC_SECURE,
+  parameter bit              IMEM_DATA_WRITE = `THREE_SIPP_ESR_SOC_IMEM_WRITE
 )(
   input  logic              clk,
   input  logic              rst,
@@ -77,7 +77,7 @@ module three_sipp_es_soc
   // ---- UART (console) ------------------------------------------------------
   wire in_uart = (dmem_addr[31:16] == UART_BASE[31:16]);
   wire [7:0] uart_rdata;
-  three_sipp_es_uart u_uart (
+  three_sipp_esr_uart u_uart (
     .clk(clk), .rst(rst),
     .addr(dmem_addr[3:0]),
     .wdata(dmem_wdata[7:0]),
@@ -99,7 +99,7 @@ module three_sipp_es_soc
   logic        dm_mem_ready;
   wire core_rst = rst | ndmreset;
 
-  three_sipp_es_core #(.SECURE(SECURE)) u_core (
+  three_sipp_esr_core #(.SECURE(SECURE)) u_core (
     .clk(clk), .rst(core_rst),
     .imem_addr(imem_addr), .imem_rdata(imem_rdata),
     .dmem_addr(dmem_addr), .dmem_re(dmem_re), .dmem_we(dmem_we),
@@ -114,7 +114,7 @@ module three_sipp_es_soc
     .dbg_ar_rdata(dbg_ar_rdata), .dbg_ar_done(dbg_ar_done)
   );
 
-  three_sipp_es_debug #(.IDCODE(32'h5441_4B53)) u_dbg (   // "TAKS"
+  three_sipp_esr_debug #(.IDCODE(32'h5441_4B53)) u_dbg (   // "TAKS"
     .clk(clk), .rst(rst),
     .tck(tck), .tms(tms), .tdi(tdi), .tdo(tdo),
     .dbg_haltreq(dbg_haltreq), .dbg_resumereq(dbg_resumereq),

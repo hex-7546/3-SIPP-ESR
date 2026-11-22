@@ -1,12 +1,12 @@
 // ============================================================================
-// three_sipp_es_branch.sv — conditional-branch comparator (shared leaf cell).
+// three_sipp_esr_branch.sv — conditional-branch comparator (shared leaf cell).
 // Given a decoded branch op and the two (already-forwarded) operands, decides
 // whether the branch is taken. Purely combinational.
 // ============================================================================
-`include "three_sipp_es_pkg.sv"
+`include "three_sipp_esr_pkg.sv"
 
-module three_sipp_es_branch
-  import three_sipp_es_pkg::*;
+module three_sipp_esr_branch
+  import three_sipp_esr_pkg::*;
 (
   input  br_op_e          br_op,
   input  logic [XLEN-1:0] a,

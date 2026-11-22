@@ -1,15 +1,15 @@
 // ============================================================================
-// tb_three_sipp_es_priv.sv — directed M/U + PMP testbench for 3-SIPP-ESR SECURE=1.
+// tb_three_sipp_esrr_priv.sv — directed M/U + PMP testbench for 3-SIPP-ESR SECURE=1.
 //
-//   vvp sim/tb_three_sipp_es_priv +IMEM=programs/build/priv_<name>.hex
+//   vvp sim/tb_three_sipp_esrr_priv +IMEM=programs/build/priv_<name>.hex
 //
-// Instantiates three_sipp_es_core with SECURE(1) directly (no SoC), with a simple
+// Instantiates three_sipp_esr_core with SECURE(1) directly (no SoC), with a simple
 // combinational memory covering IMEM (0x0000_0000..) and DRAM (0x8000_0000..).
 // A store to tohost (0x2000_0000) ends the run: 1 => PASS, else FAIL(code).
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_es_priv;
+module tb_three_sipp_esrr_priv;
   logic clk = 1'b0;
   always #5 clk = ~clk;
   logic rst;
@@ -65,7 +65,7 @@ module tb_three_sipp_es_priv;
     end
   end
 
-  three_sipp_es_core #(.SECURE(1'b1)) u_core (
+  three_sipp_esr_core #(.SECURE(1'b1)) u_core (
     .clk(clk), .rst(rst),
     .imem_addr(imem_addr), .imem_rdata(imem_rdata),
     .dmem_addr(dmem_addr), .dmem_re(dmem_re), .dmem_we(dmem_we),

@@ -82,10 +82,17 @@ module tb_three_sipp_esr;
 
   // exit on tohost
   integer cycle = 0;
+  longint n_ret = 0;
+  always @(posedge clk) begin
+    if (!rst && retire_valid) n_ret <= n_ret + 1;
+  end
+
   always @(posedge clk) begin
     if (!rst) cycle <= cycle + 1;
     if (tohost_we) begin
       $display("[TB] tohost write: 0x%08x at cycle %0d", tohost, cycle);
+      $display("[TB] retired instructions: %0d", n_ret);
+      if (n_ret > 0) $display("[TB] CPI: %0.5f", real'(cycle) / real'(n_ret));
       if (tohost == 32'd1) $display("[TB] PASS");
       else                 $display("[TB] FAIL (code %0d)", tohost);
       $finish;

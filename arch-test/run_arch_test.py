@@ -26,9 +26,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 ARCH_DIR = REPO_ROOT / "arch-test"
 SUITE_ROOT = ARCH_DIR / "riscv-test-suite" / "rv32i_m"
 ENV_DIR = ARCH_DIR / "riscv-test-env"
-TARGET_DIR = ARCH_DIR / "target" / "three_sipp_es"
+TARGET_DIR = ARCH_DIR / "target" / "three_sipp_esr"
 BUILD_DIR = ARCH_DIR / "build"
-SIM_BIN = REPO_ROOT / "sim" / "tb_three_sipp_es_arch"
+SIM_BIN = REPO_ROOT / "sim" / "tb_three_sipp_esr_arch"
 BIN2HEX = REPO_ROOT / "sw" / "bin2hex.py"
 
 # ANSI Colors

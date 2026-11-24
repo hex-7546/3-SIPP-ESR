@@ -1,0 +1,117 @@
+{
+  "core": "3-SIPP-ESR",
+  "description": "3-stage in-order RV32IMAC (+B, Zcb, Sdtrig, PMP, Smepmp, JTAG debug) processor core",
+  "verification_status": "PASS",
+  "regression": {
+    "all_passed": true,
+    "total_targets": 9,
+    "passed_targets": 9,
+    "targets": [
+      {
+        "target": "build.sh:sim",
+        "exit_code": 0,
+        "pass_lines": 1,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:cosim",
+        "exit_code": 0,
+        "pass_lines": 1,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:rvfi",
+        "exit_code": 0,
+        "pass_lines": 2,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:zcb",
+        "exit_code": 0,
+        "pass_lines": 3,
+        "fail_lines": 0,
+        "verdict": "PASS",
+        "note": "Includes negative control (corrupted value rejected as designed)"
+      },
+      {
+        "target": "build.sh:trig",
+        "exit_code": 0,
+        "pass_lines": 6,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:debug",
+        "exit_code": 0,
+        "pass_lines": 1,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:priv",
+        "exit_code": 0,
+        "pass_lines": 25,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:axi",
+        "exit_code": 0,
+        "pass_lines": 1,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      },
+      {
+        "target": "build.sh:fpga",
+        "exit_code": 0,
+        "pass_lines": 1,
+        "fail_lines": 0,
+        "verdict": "PASS"
+      }
+    ]
+  },
+  "coremark": {
+    "iterations": 10,
+    "total_ticks": 3416014,
+    "tohost_cycle": 6565312,
+    "cycles_per_iteration": 341601,
+    "coremark_per_mhz": 2.920,
+    "retired_instructions": 6293446,
+    "cpi": 1.04320,
+    "crc_valid": true,
+    "seedcrc": "0xe9f5",
+    "final_crc": "0xfcaf",
+    "status": "PASS"
+  },
+  "dhrystone": {
+    "runs": 1000,
+    "benchmark_cycles_per_iter": 434,
+    "total_cycles": 5213982,
+    "dhrystones_per_sec": 230371,
+    "dmips": 131.116,
+    "dmips_per_mhz": 1.310,
+    "retired_instructions": 5051611,
+    "cpi": 1.03214,
+    "status": "PASS"
+  },
+  "isa": {
+    "suite": "official riscv-arch-test 2.7.4",
+    "total_tests": 90,
+    "executed": 90,
+    "passed": 90,
+    "failed": 0,
+    "skipped_count": 0,
+    "skipped_tests": [],
+    "suites_breakdown": {
+      "RV32I": {"executed": 41, "passed": 41},
+      "RV32M": {"executed": 8, "passed": 8},
+      "RV32C": {"executed": 22, "passed": 22},
+      "privilege": {"executed": 18, "passed": 18},
+      "Zifencei": {"executed": 1, "passed": 1}
+    },
+    "status": "PASS"
+  }
+}

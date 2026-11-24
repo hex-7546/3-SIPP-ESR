@@ -124,8 +124,6 @@ Production qualification requires proving that test harnesses actively detect bu
 All verification data recorded in this document is deterministically reproducible from git commit HEAD using the automated test harness:
 
 ```bash
-export PATH="/tmp/bin:$PATH"
-cd /home/hex/OR5/CORES/3-SIPP-ESR
 ./run_tests.sh
 ```
 The verification suite strictly enforces **zero synthetic shortcuts, zero skipped failing tests, and 100% authentic measured data** across all 18 OR5 production cores.

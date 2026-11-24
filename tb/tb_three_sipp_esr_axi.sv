@@ -1,5 +1,5 @@
 // ============================================================================
-// tb_three_sipp_esrr_axi.sv — self-checking testbench for the 3-SIPP-ESR AXI4-Lite MASTER
+// tb_three_sipp_esr_axi.sv — self-checking testbench for the 3-SIPP-ESR AXI4-Lite MASTER
 // bridge (three_sipp_esr_axi_lite). Connects the master to an inline AXI4-Lite
 // slave-memory BFM (a word array that honours WSTRB byte strobes) and drives a
 // sequence of word + sub-word loads/stores THROUGH the five AXI channels
@@ -23,7 +23,7 @@
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_esrr_axi;
+module tb_three_sipp_esr_axi;
   localparam int ADDR_W = 32, DATA_W = 32;
   // Any access whose word address hits this region returns SLVERR from the slave.
   localparam logic [ADDR_W-1:0] ERR_ADDR = 32'h0000_0F00;

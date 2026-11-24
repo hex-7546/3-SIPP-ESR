@@ -1,12 +1,12 @@
 // ============================================================================
-// tb_three_sipp_esrr_arch.sv — Architectural compliance testbench for 3-SIPP-ESR.
+// tb_three_sipp_esr_arch.sv — Architectural compliance testbench for 3-SIPP-ESR.
 //
-//   sim/tb_three_sipp_esrr_arch +IMEM=<hex> +SIGNATURE=<sig_out> \
+//   sim/tb_three_sipp_esr_arch +IMEM=<hex> +SIGNATURE=<sig_out> \
 //                             +SIG_BEGIN=0x... +SIG_END=0x...
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_esrr_arch;
+module tb_three_sipp_esr_arch;
   logic clk = 1'b0;
   always #5 clk = ~clk;
   logic rst;

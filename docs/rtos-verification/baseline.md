@@ -56,7 +56,7 @@ All 9 repository regression targets pass cleanly with exact count matching.
 
 * **Execution Command:** `bash build.sh rtos`
 * **Exit Code:** `0`
-* **Harness:** `rtos/run_rtos.py` driving Verilator testbench `tb/tb_three_sipp_esrr_rtos.sv`
+* **Harness:** `rtos/run_rtos.py` driving Verilator testbench `tb/tb_three_sipp_esr_rtos.sv`
 * **Observed Transcript:**
   ```text
   [BOOT]freertos

@@ -1,11 +1,11 @@
 // ============================================================================
-// tb_three_sipp_esrr_fpga.sv — sim check of the synthesizable FPGA SoC.
+// tb_three_sipp_esr_fpga.sv — sim check of the synthesizable FPGA SoC.
 // Boots firmware.mem and verifies the demo runs: UART banner + LED activity.
-//   vvp sim/tb_three_sipp_esrr_fpga
+//   vvp sim/tb_three_sipp_esr_fpga
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_esrr_fpga;
+module tb_three_sipp_esr_fpga;
   logic clk = 1'b0; always #5 clk = ~clk;
   logic rst;
   logic [7:0] leds; logic serial_tx; logic [31:0] tohost; logic tohost_we;

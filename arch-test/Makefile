@@ -38,7 +38,7 @@ test: clone_suite sim
 	@$(PYTHON) $(CURDIR)/run_arch_test.py $(ARGS)
 
 clean:
-	@rm -rf $(CURDIR)/build $(CURDIR)/__pycache__ $(REPO_ROOT)/sim/tb_three_sipp_esrr_arch
+	@rm -rf $(CURDIR)/build $(CURDIR)/__pycache__ $(REPO_ROOT)/sim/tb_three_sipp_esr_arch
 
 distclean: clean
 	@rm -rf $(CURDIR)/riscv-arch-test $(CURDIR)/riscv-test-suite $(CURDIR)/riscv-test-env

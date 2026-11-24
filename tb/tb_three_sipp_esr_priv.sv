@@ -1,7 +1,7 @@
 // ============================================================================
-// tb_three_sipp_esrr_priv.sv — directed M/U + PMP testbench for 3-SIPP-ESR SECURE=1.
+// tb_three_sipp_esr_priv.sv — directed M/U + PMP testbench for 3-SIPP-ESR SECURE=1.
 //
-//   vvp sim/tb_three_sipp_esrr_priv +IMEM=programs/build/priv_<name>.hex
+//   vvp sim/tb_three_sipp_esr_priv +IMEM=programs/build/priv_<name>.hex
 //
 // Instantiates three_sipp_esr_core with SECURE(1) directly (no SoC), with a simple
 // combinational memory covering IMEM (0x0000_0000..) and DRAM (0x8000_0000..).
@@ -9,7 +9,7 @@
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_esrr_priv;
+module tb_three_sipp_esr_priv;
   logic clk = 1'b0;
   always #5 clk = ~clk;
   logic rst;

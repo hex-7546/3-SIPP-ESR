@@ -9,7 +9,7 @@ board constraints, for running the core on real hardware.
 fpga/
 ├── three_sipp_esr_fpga.sv        FPGA SoC top (core + UART + GPIO/LED)
 ├── three_sipp_esr_reset_sync.sv  reset synchroniser
-├── tb_three_sipp_esrr_fpga.sv     simulation testbench (UART banner + LED blink)
+├── tb_three_sipp_esr_fpga.sv     simulation testbench (UART banner + LED blink)
 └── arty_a7/                Digilent Arty A7 (Artix-7) project + XDC
 ```
 

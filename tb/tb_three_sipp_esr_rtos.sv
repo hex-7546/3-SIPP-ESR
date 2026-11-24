@@ -1,7 +1,7 @@
 // ============================================================================
-// tb_three_sipp_esrr_rtos.sv — RTOS bring-up harness for three_sipp_esr_soc.
+// tb_three_sipp_esr_rtos.sv — RTOS bring-up harness for three_sipp_esr_soc.
 //
-//   vvp sim/tb_three_sipp_esrr_rtos +IMEM=rtos/build/rtos.hex     [+MAXCYC=<n>]
+//   vvp sim/tb_three_sipp_esr_rtos +IMEM=rtos/build/rtos.hex     [+MAXCYC=<n>]
 //
 // Runs a FreeRTOS image on the 3-SIPP-ESR SoC. The SoC UART $writes every TX
 // byte to stdout, so the console transcript is captured verbatim. The run
@@ -16,7 +16,7 @@
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_esrr_rtos;
+module tb_three_sipp_esr_rtos;
   logic clk = 1'b0;
   always #5 clk = ~clk;
 

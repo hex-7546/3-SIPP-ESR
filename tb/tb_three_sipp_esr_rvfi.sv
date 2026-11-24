@@ -1,8 +1,8 @@
 // ============================================================================
-// tb_three_sipp_esrr_rvfi.sv — self-checking RVFI (RISC-V Formal Interface) testbench.
+// tb_three_sipp_esr_rvfi.sv — self-checking RVFI (RISC-V Formal Interface) testbench.
 //
 //   built by: ./build.sh rvfi
-//   sim/tb_three_sipp_esrr_rvfi +IMEM=programs/build/smoke.hex
+//   sim/tb_three_sipp_esr_rvfi +IMEM=programs/build/smoke.hex
 //
 // Drives the smoke program and checks the core riscv-formal invariants on
 // three_sipp_esr_core's RVFI port (proves the formal interface is wired correctly):
@@ -14,7 +14,7 @@
 // ============================================================================
 `timescale 1ns/1ps
 
-module tb_three_sipp_esrr_rvfi;
+module tb_three_sipp_esr_rvfi;
   logic clk = 1'b0; always #5 clk = ~clk;
   logic rst;
 

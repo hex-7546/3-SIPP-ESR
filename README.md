@@ -73,16 +73,23 @@ Enable the secure configuration: `SECURE` RTL parameter or compile-time `-DTHREE
 
 ## Benchmark Metrics
 
-Measured in Verilator simulation (100 MHz equivalent clock).
+Measured in cycle-accurate Verilator simulation (100 MHz equivalent clock) and bare-metal execution on physical FPGA silicon targeting the **Digilent Arty A7-100T** (`xc7a100tcsg324-1`).
 
-| Benchmark | Result |
-| :--- | :--- |
-| CoreMark (100 iterations) | **2.92 CoreMark/MHz** |
-| Dhrystone 2.1 (2,000,000 runs) | **1.26 DMIPS/MHz** |
+| Benchmark | Simulation (Verilator) | FPGA (Arty A7-100T) |
+| :--- | :--- | :--- |
+| **CoreMark 1.0** (100 iterations) | **2.92 CoreMark/MHz** (341,599 cycles/iter, CRC Validated) | **2.92 CoreMark/MHz** (73.0 CoreMark @ 25 MHz) |
+| **Dhrystone 2.1** (2,000,000 runs) | **1.26 DMIPS/MHz** (450 cycles/run, 222,222 Dhrystones/sec @ 100 MHz) | **1.26 DMIPS/MHz** (31.5 DMIPS @ 25 MHz) |
 
 ```bash
-cd coremark  && ./run_coremark.sh
+# Run CoreMark simulation
+cd coremark && ./run_coremark.sh
+
+# Run Dhrystone simulation
 cd dhrystone && ./run_dhrystone.sh
+
+# Build & run benchmarks on physical Arty A7-100T FPGA
+cd coremark && ./run_coremark_arty.sh
+cd dhrystone && ./run_dhrystone_arty.sh
 ```
 
 Detailed results, compiler flags, and methodology: **[benchmarks.md](benchmarks.md)**

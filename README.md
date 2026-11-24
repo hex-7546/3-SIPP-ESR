@@ -32,7 +32,7 @@
 | **Debug** | RISC-V External Debug via JTAG (debug spec 0.13) |
 | **RTOS** | Verified FreeRTOS port |
 | **Arch Compliance** | RISC-V International official test suite |
-| **Target FPGA** | Artix-7 100T @ 25 MHz (Digilent Arty A7) |
+| **Target FPGA** | Digilent Arty A7-100T (`xc7a100tcsg324-1`) |
 
 ---
 
@@ -51,13 +51,19 @@
 
 ## Resource Utilization
 
-Synthesized and implemented with **AMD Vivado 2023.2** targeting the **Xilinx Artix-7 100T** (`xc7a100tcsg324-1`) on the Digilent Arty A7 evaluation board.
+Synthesized and implemented with **AMD Vivado 2023.2** targeting the **Digilent Arty A7-100T** FPGA (`xc7a100tcsg324-1`).
 
-| Configuration | Slice LUTs | Registers (FF) | DSP48E1 | BRAM (36Kb) |
-| :--- | :---: | :---: | :---: | :---: |
-| Core Only (Standalone OOC, M-mode) | 7,418 | 2,092 | 12 | 0 |
-| Core Only (Secure M+U mode) | 8,647 | 2,993 | 12 | 0 |
-| Full Evaluation SoC (Arty A7 Top) | 6,646 (10.5%) | 2,147 (1.7%) | 12 (5.0%) | 8 (5.9%) |
+| Component / Target | Slice LUTs | Logic LUTs | Memory LUTs | Registers (FF) | DSP48E1 | Block RAM | LUT Utilization |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **3-SIPP-ESR Core (OOC)** | **7,418** | 7,274 | 144 | **2,092** | **12** | **0** | **11.7%** |
+| Core Only (Secure M+U mode) | 8,647 | — | — | 2,993 | 12 | 0 | 13.6% |
+| Full Evaluation SoC (Arty A7 Top) | 6,646 (10.5%) | — | — | 2,147 (1.7%) | 12 (5.0%) | 8 (5.9%) | — |
+
+- **Target Device**: Digilent Arty A7-100T (`xc7a100tcsg324-1`)
+- **Slice LUTs**: 7,418 (7,274 Logic, 144 Memory / LUTRAM) — 11.7% utilization (out of 63,400)
+- **Flip-Flops (Registers)**: 2,092
+- **DSP Slices (DSP48E1)**: 12
+- **Block RAM**: 0 BRAM
 
 *Full Evaluation SoC includes the processor core, CLINT timer, UART controller, GPIOs, and 32 KB dedicated true dual-port Block RAM.*
 

@@ -2,95 +2,70 @@
 
 # 3-SIPP-ESR
 
-**Fast, Lightweight 3-Stage 32-bit RISC-V Processor Core**
-
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow" alt="License: MIT"/></a>
-  <a href="https://www.linkedin.com/company/open-risc-v/"><img src="https://img.shields.io/badge/LinkedIn-Follow-0077B5?logo=linkedin&logoColor=white" alt="LinkedIn Follow"/></a>
-  <a href="https://or5.org"><img src="https://img.shields.io/badge/Visit-or5.org-purple?logo=google-chrome&logoColor=white" alt="Visit or5.org"/></a>
+  <img src="https://img.shields.io/badge/ISA-RV32IMACB-green" alt="ISA"/>
+  <img src="https://img.shields.io/badge/Extensions-Zicsr%20%2B%20Zcb%20%2B%20Zbc%20%2B%20Zifencei-blue" alt="Extensions"/>
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License"/>
+  <a href="https://www.linkedin.com/company/open-risc-v/"><img src="https://img.shields.io/badge/LinkedIn-Follow-0077B5" alt="LinkedIn Follow"/></a>
+  <a href="https://or5.org"><img src="https://img.shields.io/badge/Visit-or5.org-brightgreen?logo=google-chrome" alt="Visit or5.org"/></a>
 </p>
 
 </div>
 
----
-
-**3-SIPP-ESR** is a fast, lightweight 32-bit RISC-V processor core written in SystemVerilog. It uses a 3-stage pipeline with branch prediction to achieve high performance while staying small, efficient, and easy to integrate.
-
----
-
+A fast, lightweight **RV32IMACB** processor core written in SystemVerilog. Built around a 3-stage in-order pipeline with dynamic branch prediction and zero-stall forwarding, it targets embedded control planes, real-time RTOS workloads, and resource-constrained FPGA soft-cores.
 
 ![diagram](diagram.svg)
+
+---
 
 ## Overview
 
 | | |
 | :--- | :--- |
 | **ISA** | `RV32IMACB_Zicsr_Zcb_Zbc_Zifencei` |
-| **Pipeline** | 3-stage in-order (Fetch / Execute / Memory-Writeback) |
+| **Microarchitecture** | 3-stage in-order pipeline (Fetch / Execute / Memory-Writeback) |
 | **Branch Prediction** | 256-entry gshare + 64-entry BTB + RAS |
-| **Bus Interfaces** | Native + AXI4-Lite master |
-| **Debug** | RISC-V External Debug via JTAG (debug spec 0.13) |
-| **RTOS** | Verified FreeRTOS port |
-| **Arch Compliance** | RISC-V International official test suite |
-| **Target FPGA** | Digilent Arty A7-100T (`xc7a100tcsg324-1`) |
+| **Privilege Modes** | Machine (M); optional User (U) in `SECURE` configuration |
+| **Security & Memory Protection** | 8-region PMP + Smepmp (`mseccfg`: MML, MMWP, RLB) |
+| **Triggers** | 2 hardware breakpoint/watchpoint triggers (`Sdtrig`, `mcontrol6`) |
+| **Bus Interfaces** | Native memory port + AXI4-Lite master bridge |
+| **Debug** | RISC-V External Debug via JTAG (debug spec 0.13, DTM + DM) |
+| **Target FPGA** | Digilent Arty A7-100T |
 
 ---
 
 ## Features
 
-- Results are forwarded directly from write-back to execute, so there is no load-use stall — only multiplies, divides, and hardware-resolved misaligned accesses stall the pipeline
-- Ships with `M` (multiply/divide), `A` (atomics), `C` (compressed), `B` (`Zba`/`Zbb`/`Zbs`/`Zbc`), `Zcb`, and `Zifencei`
-- Optional `SECURE` build adds Machine + User privilege modes, an 8-region PMP with Smepmp, and user-level trap delegation
-- Two hardware breakpoint/watchpoint triggers (`Sdtrig`, `mcontrol6`): one for instruction addresses and one for load/store addresses
-- Unaligned loads and stores are handled in hardware — they complete normally without trapping
-- Full RISC-V external debug support over JTAG: halt, inspect registers and memory, resume, and single-step
-- Runs FreeRTOS with preemptive multitasking; interrupt latency is 63 cycles and deterministic
-- Plain synthesizable SystemVerilog with no proprietary IP, tested on Artix-7 and compatible with standard FPGA toolflows
+- **3-Stage Pipelined Execution:** Results are forwarded directly from write-back to execute with zero load-use stall — only multiplies, divides, and hardware-resolved misaligned accesses stall the pipeline
+- **Full Standard Extension Coverage:** Complete support for `I`, `M`, `A`, `C`, `B` (`Zba`/`Zbb`/`Zbs`/`Zbc`), `Zcb`, `Zicsr`, and `Zifencei`
+- **Two-Tier Trust Model (`SECURE` Build):** Optional `SECURE` build adds User privilege mode, an 8-region Physical Memory Protection (PMP) unit with **Smepmp** (`MML`, `MMWP`, `RLB`), and user-level trap delegation
+- **Hardware Triggers:** Two `Sdtrig` (`mcontrol6`) triggers supporting instruction address breakpoints and load/store data watchpoints
+- **Hardware-Resolved Misalignment:** Unaligned loads and stores complete normally in hardware without raising exceptions
+- **RISC-V External Debug over JTAG:** JTAG Debug Transport Module (DTM) and RISC-V Debug Module (0.13 spec) supporting halt, register/memory inspection, resume, and single-step
+- **Real-Time Ready:** Runs FreeRTOS with preemptive multitasking and deterministic 63-cycle interrupt latency
+- **Clean Synthesizable RTL:** Pure SystemVerilog with no proprietary IP, tested on Digilent Arty A7-100T and verified across Icarus Verilog, Verilator, and Vivado
 
 ---
 
 ## Resource Utilization
 
-Synthesized and implemented with **AMD Vivado 2023.2** targeting the **Digilent Arty A7-100T** FPGA (`xc7a100tcsg324-1`).
+Synthesized and implemented using **AMD Vivado 2023.2** targeting the **Arty A7-100T** (`xc7a100tcsg324-1`) evaluation board.
 
-| Component / Target | Slice LUTs | Logic LUTs | Memory LUTs | Registers (FF) | DSP48E1 | Block RAM | LUT Utilization |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **3-SIPP-ESR Core (OOC)** | **7,418** | 7,274 | 144 | **2,092** | **12** | **0** | **11.7%** |
-| Core Only (Secure M+U mode) | 8,647 | — | — | 2,993 | 12 | 0 | 13.6% |
-| Full Evaluation SoC (Arty A7 Top) | 6,646 (10.5%) | — | — | 2,147 (1.7%) | 12 (5.0%) | 8 (5.9%) | — |
-
-- **Target Device**: Digilent Arty A7-100T (`xc7a100tcsg324-1`)
-- **Slice LUTs**: 7,418 (7,274 Logic, 144 Memory / LUTRAM) — 11.7% utilization (out of 63,400)
-- **Flip-Flops (Registers)**: 2,092
-- **DSP Slices (DSP48E1)**: 12
-- **Block RAM**: 0 BRAM
-
-*Full Evaluation SoC includes the processor core, CLINT timer, UART controller, GPIOs, and 32 KB dedicated true dual-port Block RAM.*
-
-Enable the secure configuration: `SECURE` RTL parameter or compile-time `-DTHREE_SIPP_ESR_SECURE`.
+| Configuration | LUTs | BRAM | DSP |
+| :--- | :---: | :---: | :---: |
+| **Default** (`RV32IMACB`, M-mode) | 7,418 | 0 | 12 |
+| **SECURE** (`M+U`, 8-region PMP/Smepmp) | 8,647 | 0 | 12 |
 
 ---
 
 ## Benchmark Metrics
 
-Measured in cycle-accurate Verilator simulation (100 MHz equivalent clock) and bare-metal execution on physical FPGA silicon targeting the **Digilent Arty A7-100T** (`xc7a100tcsg324-1`).
+Measured on FPGA **Arty A7-100T**.
 
-| Benchmark | Simulation (Verilator) | FPGA (Arty A7-100T) |
-| :--- | :--- | :--- |
-| **CoreMark 1.0** (100 iterations) | **2.92 CoreMark/MHz** (341,599 cycles/iter, CRC Validated) | **2.92 CoreMark/MHz** (73.0 CoreMark @ 25 MHz) |
-| **Dhrystone 2.1** (2,000,000 runs) | **1.26 DMIPS/MHz** (450 cycles/run, 222,222 Dhrystones/sec @ 100 MHz) | **1.26 DMIPS/MHz** (31.5 DMIPS @ 25 MHz) |
-
-```bash
-# Run CoreMark simulation
-cd coremark && ./run_coremark.sh
-
-# Run Dhrystone simulation
-cd dhrystone && ./run_dhrystone.sh
-
-# Build & run benchmarks on physical Arty A7-100T FPGA
-cd coremark && ./run_coremark_arty.sh
-cd dhrystone && ./run_dhrystone_arty.sh
-```
+| Benchmark | FPGA (Arty A7-100T @ 25 MHz) |
+| :--- | :--- |
+| **CoreMark 1.0** (10 iterations) | **2.920 CoreMark/MHz** (341,542 cycles/iter, CRC Validated) |
+| **Dhrystone 2.1** (1,000 runs) | **1.310 DMIPS/MHz** (434 cycles/run) |
 
 Detailed results, compiler flags, and methodology: **[benchmarks.md](benchmarks.md)**
 
@@ -98,12 +73,12 @@ Detailed results, compiler flags, and methodology: **[benchmarks.md](benchmarks.
 
 ## Requirements
 
-| Tool | Version |
-| :--- | :--- |
-| Verilator | 5.0 or later |
-| Python | 3.10 or later |
-| RISC-V GCC | `riscv-none-elf-*` or `riscv64-unknown-elf-*` (needed for RTOS, benchmarks, arch-test) |
-| Vivado | 2023.2 (optional, FPGA implementation only) |
+| Tool | Version | Purpose |
+| :--- | :--- | :--- |
+| **Verilator** | 5.0 or later | Cycle-accurate RTL simulation |
+| **Python** | 3.10 or later | Test-program builders and co-simulation |
+| **RISC-V GCC** | 13.0 or later (`riscv-none-elf-*` or `riscv64-unknown-elf-*`) | Compiling RTOS, SECURE tests, and FPGA firmware |
+| **Vivado** | 2023.2 *(optional)* | FPGA synthesis and implementation for Digilent Arty A7-100T (xc7a100tcsg324-1) |
 
 Set `RISCV_TC=/path/to/toolchain/bin` to point at a non-`PATH` toolchain.
 
@@ -111,17 +86,15 @@ Set `RISCV_TC=/path/to/toolchain/bin` to point at a non-`PATH` toolchain.
 
 ## Build & Test
 
-A single top-level **Makefile** covers the most common workflows. For running individual workflows use `build.sh`.
+A single top-level **Makefile** covers the most common workflows. For fine-grained control every action is also available directly through `build.sh`.
 
 ### Makefile targets
 
 ```bash
 make              # compile RTL + run self-checking smoke test
-make arch         # RISC-V Architectural Compliance suite — clones upstream on first run
 make rtos         # FreeRTOS preemptive demo + negative control
 make rtos-suite   # full 5-stage RTOS verification battery
 make clean        # remove simulation and build artifacts
-make distclean    # also removes the cloned riscv-arch-test upstream
 make help         # list all targets
 ```
 
@@ -137,85 +110,29 @@ make help         # list all targets
 ./build.sh priv       # SECURE config: M/U privilege, PMP, Smepmp, triggers
 ./build.sh axi        # AXI4-Lite master bridge BFM test
 ./build.sh fpga       # FPGA SoC simulation (UART banner + LED blink)
-./build.sh arch       # RISC-V Architectural Compliance suite
 ./build.sh rtos       # FreeRTOS demo
 ./build.sh rtos-suite # full 5-stage RTOS verification suite
-./build.sh clean
-./run_tests.sh        # all of the above (except RTOS/benchmarks), checked against tests/expected.txt
+./build.sh clean      # remove build artifacts
+./run_tests.sh        # full regression battery checked against tests/expected.txt
 ```
 
 Every action exits non-zero if the testbench reports `FAIL`, `TIMEOUT`, `MISMATCH`, or does not print its `PASS` verdict.
 
-### What each test checks
-
-| Test | What it covers |
-| :--- | :--- |
-| `sim` | ALU operations, multiply/divide, branches, load/store, CSR access, and trap handling |
-| `cosim` | Every retired instruction compared against a golden RV32IM ISA model |
-| `rvfi` | RISC-V Formal Interface trace invariants checked over the smoke program |
-| `zcb` | All Zcb compressed instructions, plus a negative control that must fail |
-| `trig` | Hardware breakpoint and watchpoint triggers — both hit and miss cases |
-| `debug` | JTAG DTM and Debug Module: halt, register and memory access, resume, single-step |
-| `priv` | 24 SECURE-mode tests covering U-mode traps, PMP faults, Smepmp lock-down, and `mtvec` |
-| `axi` | AXI4-Lite master bridge against a slave BFM, including SLVERR handling |
-| `fpga` | FPGA SoC simulation: UART startup banner and LED blink |
-| `arch` | Official RISC-V Architectural Compliance Suite — full results in [tests.md](tests.md) |
-
-Full pass/fail results and per-test details are in **[tests.md](tests.md)**.
+For in depth results and per-test details: **[tests.md](tests.md)**.
 
 ---
 
-## RISC-V Architectural Compliance
+## Configuration Options
 
-Verified against the official **RISC-V International Architectural Compliance Test Suite** (`riscv-arch-test`). The upstream test suite is fetched automatically on first run — nothing to install manually.
+3-SIPP-ESR ships in two build-time configurations, selected by the `SECURE` RTL parameter or compile-time define `-DTHREE_SIPP_ESR_SECURE`:
 
-```bash
-make arch                                           # recommended — clones & runs in one step
-./build.sh arch                                     # or via build.sh
-
-# Run individual suites or a single test:
-python3 arch-test/run_arch_test.py --suite I        # RV32I base integer
-python3 arch-test/run_arch_test.py --suite M        # Multiply & divide
-python3 arch-test/run_arch_test.py --suite C        # Compressed
-python3 arch-test/run_arch_test.py --suite Zifencei # Instruction-fetch fence
-python3 arch-test/run_arch_test.py --suite privilege # Traps & misalignment
-python3 arch-test/run_arch_test.py --test jal-01    # single test by name
-```
-
-| Suite | Tests |
-| :--- | :---: |
-| RV32I — Base Integer | 38 |
-| RV32M — Multiply & Divide | 8 |
-| RV32C — Compressed Instructions | 27 |
-| Zifencei — Instruction-Fetch Fence | 1 |
-| Privilege — Traps, `ecall`/`ebreak`, Misalignment | 16 |
-| **Total** | **90** |
-
-The `arch-test/` directory contains only the target port (`target/three_sipp_esr/`) and the test runner (`run_arch_test.py`). The upstream RISC-V test suite is cloned on demand and is gitignored.
-
----
-
-## FreeRTOS & RTOS Verification
-
-FreeRTOS port verified across 5 engineering stages in Verilator simulation.
-
-```bash
-make rtos           # quickstart demo + negative control
-make rtos-suite     # full 5-stage battery
-# or:
-./build.sh rtos
-./build.sh rtos-suite
-```
-
-| Stage | What is Verified |
-| :--- | :--- |
-| 1 — Baseline Demo | Preemptive tick, queue FIFO ordering, semaphores, and a negative control that confirms preemption is load-bearing |
-| 2 — Smoke Suite | Multi-tasking, preemption, register state preservation across context switches, heap and stack safety |
-| 3 — Interrupts | CLINT timer, machine software interrupt, ISR task notifications, and 10 competing interrupts under tick load |
-| 4 — Latency | Cycle-accurate measurement of interrupt latency (63 cycles, zero jitter) and scheduler latency (316 cycles) |
-| 5 — Stress & RTA | Three-task workload with mutex contention; positive run shows zero deadline misses, overloaded negative control reports 3 |
-
-Detailed results and reproduction guide: [`rtos/README.md`](rtos/README.md)
+| Property / Feature | Default | SECURE |
+| :--- | :--- | :--- |
+| **Privilege Modes** | Machine (M) only | Machine (M) + User (U) |
+| **Memory Protection** | — | 8-region PMP + Smepmp (`mseccfg`: MML, MMWP, RLB) |
+| **Target Use Case** | Smallest area footprint | Isolation, security, user-mode trap delegation |
+| **`misa` U-bit** | Not set | Set (bit 20 = 1) |
+| **Locked PMP Regions** | — | Enforced on Machine mode as well |
 
 ---
 
@@ -223,35 +140,29 @@ Detailed results and reproduction guide: [`rtos/README.md`](rtos/README.md)
 
 ```
 3-SIPP-ESR/
-├── Makefile                    top-level build entry point
-├── build.sh                    fine-grained build & test driver
-├── run_tests.sh                regression runner (checks against tests/expected.txt)
+├── Makefile                    top-level build & test entry point
+├── build.sh                    fine-grained simulation & test driver
+├── run_tests.sh                automated regression runner (checks against tests/expected.txt)
+├── tests.md                    comprehensive verification & test report
+├── benchmarks.md               detailed performance benchmarks (CoreMark, Dhrystone)
 ├── rtl/
-│   ├── three_sipp_esr_core.sv   3-stage pipeline, predictor, forwarding
-│   ├── three_sipp_esr_soc.sv    minimal SoC (IMEM, DRAM, CLINT, UART, tohost)
-│   ├── three_sipp_esr_debug.sv  JTAG DTM + RISC-V Debug Module
+│   ├── three_sipp_esr_core.sv      3-stage pipeline, predictor, forwarding
+│   ├── three_sipp_esr_soc.sv       minimal SoC (IMEM, DRAM, CLINT, UART, tohost)
+│   ├── three_sipp_esr_debug.sv     JTAG DTM + RISC-V Debug Module (0.13 spec)
 │   ├── three_sipp_esr_axi_lite.sv  AXI4-Lite master bridge
-│   ├── three_sipp_esr_uart.sv   UART peripheral
-│   └── common/                 shared datapath leaf cells (ALU, MulDiv, RegFile,
-│                               CSR, RVC, ImmGen, Branch, Decode, PMP)
-├── arch-test/
-│   ├── Makefile                clone-on-demand + run targets
-│   ├── run_arch_test.py        multi-threaded compliance test runner
-│   └── target/three_sipp_esr/  target port (linker script, entry, signature macros)
-├── tb/                         testbenches (smoke, RVFI, debug, priv, AXI, arch)
+│   ├── three_sipp_esr_uart.sv      UART peripheral
+│   └── common/                     shared leaf cells (ALU, MulDiv, RegFile,
+│                                   CSR, RVC, ImmGen, Branch, Decode, PMP)
+├── tb/                         testbenches (smoke, RVFI, debug, priv, AXI)
 ├── rtos/                       FreeRTOS port (kernel, BSP, verification apps)
-├── coremark/                   CoreMark bare-metal port + run scripts
-├── dhrystone/                  Dhrystone 2.1 bare-metal port + run scripts
-├── fpga/                       FPGA SoC wrapper + Arty A7 XDC
+├── fpga/                       FPGA top-level SoC wrapper + Digilent Arty A7-100T XDC constraints
 ├── programs/                   test-program builders
-├── sw/                         assembly programs & bring-up firmware
-├── tools/                      golden ISA model + co-simulation driver
-├── docs/                       MkDocs documentation site
-└── tests/                      regression golden output (expected.txt)
+├── sw/                         firmware, binary-to-hex utilities, bring-up tests
+└── tools/                      golden Python ISA model + co-simulation driver
 ```
 
 ---
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE) — free for commercial, research, and academic use.

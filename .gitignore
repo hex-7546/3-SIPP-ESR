@@ -81,3 +81,13 @@ sw/fpga_hello.elf
 sw/vivado*
 sw/firmware.mem
 /build/
+
+# Keep benchmark and extra test suites local only
+coremark/
+dhrystone/
+embench/
+bench/
+arch-test/
+compliance/
+isa/
+run_arch_test.sh
